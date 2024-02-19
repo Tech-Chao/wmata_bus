@@ -32,7 +32,12 @@ class RouteStopCell extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text("${stop.atIndex! + 1}. ${stop.name ?? ""}",
-                      style: Theme.of(context).textTheme.titleLarge),
+                      style: stop.isSelected
+                          ? Theme.of(context)
+                              .textTheme
+                              .titleLarge
+                              ?.copyWith(fontWeight: FontWeight.bold)
+                          : Theme.of(context).textTheme.titleLarge),
                 ),
                 cellTrailWidget(context)
               ],
@@ -70,16 +75,13 @@ class RouteStopCell extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Text(
-                    e.prdctdn ?? "",
+                    e.minutes.toString(),
                     style: Theme.of(context)
                         .textTheme
                         .headlineLarge
                         ?.copyWith(color: Theme.of(context).primaryColor),
                   ),
-                  (e.prdctdn?.toUpperCase() != "DUE")
-                      ? Text(" min",
-                          style: Theme.of(context).textTheme.titleSmall)
-                      : Container()
+                  Text(" min", style: Theme.of(context).textTheme.titleSmall)
                 ],
               ),
             ))

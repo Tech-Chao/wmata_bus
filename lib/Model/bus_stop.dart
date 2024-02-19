@@ -14,6 +14,8 @@ class BusStop {
   int? atIndex;
   bool isLoading = false;
   bool isFavorite = false;
+  bool isSelected = false;
+  bool? direction;
   BusRoute? belongToRoute;
   List<BusPrediction>? predictions;
 
@@ -25,8 +27,8 @@ class BusStop {
     name = json['Name'];
     routes = json['Routes'].cast<String>();
     stopID = json['StopID'];
-    atIndex = json['atIndex'];
-    isFavorite = json['isFavorite'] ?? false;
+
+    direction = json['direction'];
     if (json['belongTo'] != null) {
       belongToRoute = BusRoute.fromJson(json['belongTo']);
     }
@@ -40,8 +42,7 @@ class BusStop {
     data['Routes'] = routes;
     data['StopID'] = stopID;
 
-    data['atIndex'] = atIndex;
-    data['isFavorite'] = isFavorite;
+    data['direction'] = direction;
     data['belongTo'] = belongToRoute?.toJson();
     return data;
   }

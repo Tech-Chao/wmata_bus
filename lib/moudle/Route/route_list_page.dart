@@ -108,7 +108,7 @@ class _RouteListPageState extends State<RouteListPage> {
           disabledBorder: outlineInputBorder,
           focusedErrorBorder: outlineInputBorder,
           errorBorder: outlineInputBorder,
-          hintText: 'Please enter the bus code',
+          hintText: 'Please enter the Enter a bus route',
           hintMaxLines: 1,
           hintStyle: Theme.of(context).textTheme.titleMedium,
           suffixIcon: IconButton(
