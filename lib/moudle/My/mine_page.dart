@@ -37,7 +37,7 @@ class _MinePageViewState extends State<MinePageView> {
       scheme: 'mailto',
       path: 'smwuchaoyu1991@gmail.com',
       query: encodeQueryParameters(<String, String>{
-        'subject': 'Chicago BusTracker Feedback!',
+        'subject': 'DC Bus Tracker Feedback!',
       }),
     );
     getOldVersion();
@@ -163,7 +163,7 @@ class _MinePageViewState extends State<MinePageView> {
         appBar: AppBar(
           elevation: 0,
           title: Text(
-            'Chicago Bus Tracker',
+            'DC Bus Tracker',
             style: Theme.of(context).textTheme.headlineLarge,
           ),
         ),

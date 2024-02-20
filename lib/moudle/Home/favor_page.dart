@@ -218,7 +218,7 @@ class _FavoritePageState extends State<FavoritePage> {
         backgroundColor: Colors.grey[100],
         appBar: AppBar(
             title: Text(
-          "Chicago Bus Tracker",
+          "DC Bus Tracker",
           style: Theme.of(context).textTheme.headlineLarge,
         )),
         floatingActionButton: floatingButton(context),
