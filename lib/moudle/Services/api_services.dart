@@ -10,14 +10,13 @@ class APIService {
   static String apiKey = "api_key";
   static String key = "6fa3d902831a42158962db3902df4ef3";
 
-// https://www.ctabustracker.com/bustime/api/v2/getroutes??format=json&key=$key
+// https://api.wmata.com/Bus.svc/json/jRoutes
   static Future<List<BusRoute>?> updateRouteInfo() async {
     try {
       var httpClient = HttpClient();
-      var uri = Uri.parse(
-          'https://www.ctabustracker.com/bustime/api/v2/getroutes?format=json&key=$key');
+      var uri = Uri.parse('https://api.wmata.com/Bus.svc/json/jRoutes');
       var request = await httpClient.getUrl(uri);
-
+      request.headers.add(apiKey, key);
       var response = await request.close();
 
       if (response.statusCode == HttpStatus.ok) {
@@ -25,8 +24,7 @@ class APIService {
         var responseBody = await utf8.decodeStream(response);
         Map<String, dynamic> data = json.decode(responseBody);
         List<Map<String, dynamic>> routeMaps =
-            (data["bustime-response"]["routes"] as List<dynamic>)
-                .cast<Map<String, dynamic>>();
+            (data["Routes"] as List<dynamic>).cast<Map<String, dynamic>>();
         List<BusRoute> routes =
             routeMaps.map((e) => BusRoute.fromJson(e)).toList();
         return routes;

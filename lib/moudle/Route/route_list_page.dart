@@ -42,7 +42,7 @@ class _RouteListPageState extends State<RouteListPage> {
                   e.routeId!
                       .toLowerCase()
                       .contains(_controller.text.toLowerCase().trim()) ||
-                  e.routeLongName!
+                  e.name!
                       .toLowerCase()
                       .contains(_controller.text.toLowerCase().trim()))
               .toList();
@@ -65,8 +65,10 @@ class _RouteListPageState extends State<RouteListPage> {
                       },
                       child: RouteCell(
                           titile: route.routeId!,
-                          subtitle: route.routeLongName ?? "",
-                          routeColor: route.routeColor ?? ""),
+                          subtitle: route.lineDescription != null
+                              ? route.lineDescription!
+                              : route.name!,
+                          routeColor: ""),
                     );
                   },
                 );

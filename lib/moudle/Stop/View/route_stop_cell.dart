@@ -35,9 +35,9 @@ class RouteStopCell extends StatelessWidget {
                       style: stop.isSelected
                           ? Theme.of(context)
                               .textTheme
-                              .titleSmall
+                              .titleMedium
                               ?.copyWith(fontWeight: FontWeight.bold)
-                          : Theme.of(context).textTheme.titleSmall),
+                          : Theme.of(context).textTheme.titleMedium),
                 ),
                 cellTrailWidget(context)
               ],

@@ -47,7 +47,7 @@ class _RouteStopPageState extends State<RouteStopPage> {
   bool autoRefresh = false;
   ValueNotifier<int> remindSeconds = ValueNotifier<int>(60);
 
-  late BusStopProvider yourProvider;
+  // late BusStopProvider yourProvider;
 
   //  滚动定位
   final ItemScrollController itemScrollController = ItemScrollController();
@@ -124,20 +124,20 @@ class _RouteStopPageState extends State<RouteStopPage> {
             .toList();
         routeDetail?.direction0?.stops?.asMap().forEach((index, value) {
           value.atIndex = index;
-          value.name = yourProvider.busStop
-              ?.where((element) => value.stopID == element.stopCode.toString())
-              .first
-              .stopName;
+          // value.name = yourProvider.busStop
+          //     ?.where((element) => value.stopID == element.stopCode.toString())
+          //     .first
+          //     .stopName;
         });
         routeDetail?.direction1?.stops = routeDetail?.direction1?.stops!
             .where((element) => element.stopID != null && element.stopID != "0")
             .toList();
         routeDetail?.direction1?.stops?.asMap().forEach((index, value) {
           value.atIndex = index;
-          value.name = yourProvider.busStop
-              ?.where((element) => value.stopID == element.stopCode.toString())
-              .first
-              .stopName;
+          // value.name = yourProvider.busStop
+          //     ?.where((element) => value.stopID == element.stopCode.toString())
+          //     .first
+          //     .stopName;
         });
         directionModel =
             direction ? routeDetail?.direction0 : routeDetail?.direction1;
@@ -189,7 +189,7 @@ class _RouteStopPageState extends State<RouteStopPage> {
 
   @override
   void initState() {
-    yourProvider = context.read<BusStopProvider>();
+    // yourProvider = context.read<BusStopProvider>();
 
     deepCopyRote = BusRoute.fromJson(widget.route.toJson());
     if (widget.stop?.direction != null) {
@@ -224,7 +224,8 @@ class _RouteStopPageState extends State<RouteStopPage> {
   @override
   Widget build(BuildContext context) {
     String routeNavTitle = deepCopyRote.routeId ?? "";
-    String description = deepCopyRote.routeLongName ?? "";
+    String? descriptionTitle =
+        deepCopyRote.lineDescription ?? deepCopyRote.name!;
     String destinationName =
         "to ${direction ? routeDetail?.direction0?.directionText : routeDetail?.direction1?.directionText} TO ${direction ? routeDetail?.direction0?.tripHeadsign : routeDetail?.direction1?.tripHeadsign}";
 
@@ -248,7 +249,8 @@ class _RouteStopPageState extends State<RouteStopPage> {
           children: [
             Text(routeNavTitle,
                 style: Theme.of(context).textTheme.headlineMedium),
-            Text(description, style: Theme.of(context).textTheme.headlineSmall),
+            Text(descriptionTitle,
+                style: Theme.of(context).textTheme.headlineSmall),
           ],
         ),
         actions: [
@@ -331,6 +333,7 @@ class _RouteStopPageState extends State<RouteStopPage> {
                                         .removeFavorite(selectedStop!);
                                   } else {
                                     // 收藏站点
+                                    selectedStop?.direction = direction;
                                     context
                                         .read<FavoriteProvder>()
                                         .addFavorite(selectedStop!);

@@ -25,7 +25,7 @@ void main() async {
   }
   // 异步加载本地公交数据JSON
   List<BusRoute>? routes = await loadRouteData();
-  List<BusStop>? stops = await loadStopsData();
+  // List<BusStop>? stops = await loadStopsData();
 
   // String? haveFiveStarDate = await StoreManager.get("haveFiveStar");
   var res = await StoreManager.get("_isOldVersion");
@@ -36,8 +36,8 @@ void main() async {
     ChangeNotifierProvider(
         create: (context) =>
             FavoriteProvder()..setFavoriteStops(favoriteStops)),
-    ChangeNotifierProvider(
-        create: (context) => BusStopProvider()..setBusStops(stops)),
+    // ChangeNotifierProvider(
+    //     create: (context) => BusStopProvider()..setBusStops(stops)),
   ], child: MyApp(isOlderVersion: res == true.toString())));
 }
 

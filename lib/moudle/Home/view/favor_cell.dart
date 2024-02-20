@@ -27,7 +27,7 @@ class FavorCell extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(stop.name ?? "",
-                      style: Theme.of(context).textTheme.titleLarge),
+                      style: Theme.of(context).textTheme.titleMedium),
                 ),
                 // Text(stop.stpid != null ? " (${stop.stpid})" : "",
                 //     style: Theme.of(context)
@@ -36,12 +36,14 @@ class FavorCell extends StatelessWidget {
               ],
             ),
             Row(children: [
-              Icon(Icons.directions_bus_rounded,
-                  color:
-                      Utils.hexToColor(stop.belongToRoute?.routeColor ?? "")),
-              Text(
-                  "${stop.belongToRoute?.routeId ?? ""} - ${stop.belongToRoute?.routeId ?? ""}",
-                  style: Theme.of(context).textTheme.titleMedium),
+              const Icon(Icons.directions_bus_rounded),
+              // color:
+              //     Utils.hexToColor(stop.belongToRoute?.routeColor ?? "")),
+              Text(stop.belongToRoute?.routeId ?? "",
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(fontWeight: FontWeight.bold)),
             ]),
           ],
         ),

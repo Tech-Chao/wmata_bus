@@ -35,7 +35,7 @@ class _MinePageViewState extends State<MinePageView> {
   void initState() {
     emailLaunchUri = Uri(
       scheme: 'mailto',
-      path: 'smwuchaoyu1991@gmail.com',
+      path: 'wuchaoyu1991@gmail.com',
       query: encodeQueryParameters(<String, String>{
         'subject': 'DC Bus Tracker Feedback!',
       }),
@@ -177,7 +177,7 @@ class _MinePageViewState extends State<MinePageView> {
               color: Colors.white,
               child: ListTile(
                 leading: Text(
-                  "Big Text",
+                  "Larger Font",
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 trailing: Switch(
@@ -195,7 +195,7 @@ class _MinePageViewState extends State<MinePageView> {
                                 style: Theme.of(context).textTheme.titleLarge,
                               ),
                               content: Text(
-                                  '"Big Text" ${value ? "Enabled" : "Close"} is successful and will take effect after restarting. Do you want to exit immediately?',
+                                  '"Larger Font" ${value ? "Enabled" : "Close"} is successful and will take effect after restarting. Do you want to exit immediately?',
                                   style:
                                       Theme.of(context).textTheme.titleLarge),
                               actions: [

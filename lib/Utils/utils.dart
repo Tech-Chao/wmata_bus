@@ -24,7 +24,10 @@ class Utils {
     return "${difference.inMinutes.toString()} minutes";
   }
 
-  static Color hexToColor(String code) {
+  static Color? hexToColor(String code) {
+    if (code.isEmpty) {
+      return null;
+    }
     code = code.replaceAll("#", "");
     return Color(int.parse(code, radix: 16) + 0xFF000000);
   }

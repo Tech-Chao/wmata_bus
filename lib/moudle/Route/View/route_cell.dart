@@ -31,7 +31,7 @@ class RouteCell extends StatelessWidget {
             Text(titile,
                 style: Theme.of(context)
                     .textTheme
-                    .headlineLarge
+                    .headlineMedium
                     ?.copyWith(color: Colors.black)),
           ]),
           subtitle:
