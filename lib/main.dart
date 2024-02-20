@@ -76,28 +76,28 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
             brightness: Brightness.light,
-            primaryColor: const Color(0xff2668AF),
-            primarySwatch: createMaterialColor(const Color(0xff2668AF)),
+            primaryColor: const Color(0xff008457),
+            primarySwatch: createMaterialColor(const Color(0xff008457)),
             colorScheme: ColorScheme.fromSeed(
-              seedColor: const Color(0xff2668AF),
+              seedColor: const Color(0xff008457),
               brightness: Brightness.light,
             ),
             navigationBarTheme: const NavigationBarThemeData(
-                backgroundColor: Color(0xff2668AF)),
+                backgroundColor: Color(0xff008457)),
             appBarTheme: const AppBarTheme(
                 foregroundColor: Colors.white,
-                backgroundColor: Color(0xff2668AF)),
+                backgroundColor: Color(0xff008457)),
             buttonTheme: const ButtonThemeData(
                 buttonColor: Colors.white, highlightColor: Color(0xff2668AF)),
             elevatedButtonTheme: ElevatedButtonThemeData(
                 style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
-                    backgroundColor: const Color(0xff2668AF))),
+                    backgroundColor: const Color(0xff008457))),
             textTheme:
                 isOlderVersion ? olderTextThemeData : defaultTextThemeData,
             floatingActionButtonTheme: const FloatingActionButtonThemeData(
                 foregroundColor: Colors.white,
-                backgroundColor: Color(0xff2668AF))),
+                backgroundColor: Color(0xff008457))),
         home: MyTabPage(isOlderVersion: isOlderVersion));
   }
 

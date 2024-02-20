@@ -258,6 +258,7 @@ class _RouteStopPageState extends State<RouteStopPage> {
               onPressed: () {
                 setState(() {
                   setState(() {
+                    _timer?.cancel();
                     selectedStop?.isSelected = false;
                     selectedStop?.predictions = null;
                     selectedStop = null;
