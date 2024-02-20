@@ -2,10 +2,10 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:wmata_bus/Model/bus_stop.dart';
+import 'package:wmata_bus/Model/bus_route_detail.dart';
 
 class RouteStopCell extends StatelessWidget {
-  final BusStop stop;
+  final InnerBusStop stop;
   final void Function() addFavorite;
 
   const RouteStopCell({
@@ -35,9 +35,9 @@ class RouteStopCell extends StatelessWidget {
                       style: stop.isSelected
                           ? Theme.of(context)
                               .textTheme
-                              .titleLarge
+                              .titleSmall
                               ?.copyWith(fontWeight: FontWeight.bold)
-                          : Theme.of(context).textTheme.titleLarge),
+                          : Theme.of(context).textTheme.titleSmall),
                 ),
                 cellTrailWidget(context)
               ],

@@ -18,4 +18,5 @@ class ConstTool {
 
   // 常来那个名称
   static String kAllRouteskey = "kAllRouteskey";
+  static String kAllStopskey = "kAllStopskey";
 }

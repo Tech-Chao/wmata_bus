@@ -42,11 +42,11 @@ class APIService {
 
   // https://api.wmata.com/Bus.svc/json/jRouteDetails[?RouteID][&Date]
   static Future<Map<String, dynamic>?> getRouteDetail(
-      {required String routeID}) async {
+      {required String routeId}) async {
     try {
       var httpClient = HttpClient();
       var uri = Uri.parse(
-          'https://api.wmata.com/Bus.svc/json/jRouteDetails?RouteID=$routeID');
+          'https://api.wmata.com/Bus.svc/json/jRouteDetails?RouteID=$routeId');
       var request = await httpClient.getUrl(uri);
       request.headers.add(apiKey, key);
       var response = await request.close();
@@ -68,12 +68,12 @@ class APIService {
 
   // https://api.wmata.com/Incidents.svc/json/BusIncidents[?Route]
   static Future<List<BusIncident>?> getBusIncidents(
-      {required String routeID}) async {
+      {required String routeId}) async {
     try {
       var httpClient = HttpClient();
 
       var uri = Uri.parse(
-          'https://api.wmata.com/Incidents.svc/json/BusIncidents?Route=$routeID');
+          'https://api.wmata.com/Incidents.svc/json/BusIncidents?Route=$routeId');
       var request = await httpClient.getUrl(uri);
       request.headers.add(apiKey, key);
       var response = await request.close();

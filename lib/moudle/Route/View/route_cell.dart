@@ -4,8 +4,13 @@ import 'package:flutter/material.dart';
 class RouteCell extends StatelessWidget {
   final String titile;
   final String subtitle;
+  final String routeColor;
 
-  const RouteCell({Key? key, required this.titile, required this.subtitle})
+  const RouteCell(
+      {Key? key,
+      required this.titile,
+      required this.subtitle,
+      required this.routeColor})
       : super(key: key);
 
   @override
@@ -18,7 +23,8 @@ class RouteCell extends StatelessWidget {
       margin: const EdgeInsets.fromLTRB(15, 20, 15, 0),
       child: ListTile(
           title: Row(children: [
-            const Icon(Icons.directions_bus_rounded),
+            Icon(Icons.directions_bus_rounded,
+                color: Utils.hexToColor(routeColor)),
             const SizedBox(
               width: 10,
             ),

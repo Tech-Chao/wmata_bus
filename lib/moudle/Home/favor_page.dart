@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:wmata_bus/Model/bus_route_detail.dart';
 import 'package:wmata_bus/Model/bus_stop.dart';
 import 'package:wmata_bus/Providers/favorite_provider.dart';
 import 'package:wmata_bus/Utils/const_tool.dart';
@@ -190,14 +191,14 @@ class _FavoritePageState extends State<FavoritePage> {
     );
   }
 
-  Widget mainBodyWidget(List<BusStop> favorites) {
+  Widget mainBodyWidget(List<InnerBusStop> favorites) {
     return ListView.builder(
       itemCount: favorites.length,
       itemBuilder: (BuildContext context, int index) {
         return GestureDetector(
             onTap: () {
               // 跳转详情页 child: RouteCell(route: null),
-              BusStop stop = favorites[index];
+              InnerBusStop stop = favorites[index];
               Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                 return RouteStopPage(
                   route: stop.belongToRoute!,

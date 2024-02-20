@@ -8,7 +8,7 @@ class AppRouteProvider extends ChangeNotifier {
   void setBusRoutes(List<BusRoute>? data) {
     _busRoutes = data
         ?.where((element) =>
-            !element.routeID!.contains("*") && !element.routeID!.contains("/"))
+            !element.routeId!.contains("*") && !element.routeId!.contains("/"))
         .toList();
     notifyListeners();
   }

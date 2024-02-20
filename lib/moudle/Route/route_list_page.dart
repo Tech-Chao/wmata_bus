@@ -39,10 +39,10 @@ class _RouteListPageState extends State<RouteListPage> {
 
           filterRoutes = routes!
               .where((e) =>
-                  e.routeID!
+                  e.routeId!
                       .toLowerCase()
                       .contains(_controller.text.toLowerCase().trim()) ||
-                  e.routeID!
+                  e.routeId!
                       .toLowerCase()
                       .contains(_controller.text.toLowerCase().trim()))
               .toList();
@@ -64,8 +64,9 @@ class _RouteListPageState extends State<RouteListPage> {
                         }));
                       },
                       child: RouteCell(
-                          titile: route.routeID!,
-                          subtitle: route.lineDescription ?? ""),
+                          titile: route.routeId!,
+                          subtitle: route.routeLongName ?? "",
+                          routeColor: route.routeColor ?? ""),
                     );
                   },
                 );

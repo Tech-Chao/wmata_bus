@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:wmata_bus/Model/bus_stop.dart';
 import 'package:wmata_bus/Providers/favorite_provider.dart';
+import 'package:wmata_bus/Providers/stop_provider.dart';
 import 'package:wmata_bus/Utils/const_tool.dart';
 import 'package:wmata_bus/Utils/store_manager.dart';
 import 'package:wmata_bus/moudle/Services/api_services.dart';
@@ -20,7 +21,7 @@ import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class RouteStopPage extends StatefulWidget {
   final BusRoute route;
-  final BusStop? stop;
+  final InnerBusStop? stop;
   const RouteStopPage({super.key, this.stop, required this.route});
 
   @override
@@ -37,7 +38,7 @@ class _RouteStopPageState extends State<RouteStopPage> {
   // 方向
   bool direction = true;
   // 选中站点
-  BusStop? selectedStop;
+  InnerBusStop? selectedStop;
   // 定时器
   Timer? _timer;
 
@@ -45,6 +46,8 @@ class _RouteStopPageState extends State<RouteStopPage> {
 
   bool autoRefresh = false;
   ValueNotifier<int> remindSeconds = ValueNotifier<int>(60);
+
+  late BusStopProvider yourProvider;
 
   //  滚动定位
   final ItemScrollController itemScrollController = ItemScrollController();
@@ -87,9 +90,9 @@ class _RouteStopPageState extends State<RouteStopPage> {
     }
   }
 
-  fetchBusIncidents(String routeID) async {
+  fetchBusIncidents(String routeId) async {
     List<BusIncident>? incidents =
-        await APIService.getBusIncidents(routeID: routeID);
+        await APIService.getBusIncidents(routeId: routeId);
     if (incidents != null) {
       String temp = "";
       for (var element in incidents) {
@@ -102,7 +105,7 @@ class _RouteStopPageState extends State<RouteStopPage> {
     }
   }
 
-  fetchRouteDetail(String routeID) async {
+  fetchRouteDetail(String routeId) async {
     if (isLoading) {
       return;
     }
@@ -110,15 +113,25 @@ class _RouteStopPageState extends State<RouteStopPage> {
       isLoading = true;
     });
     Map<String, dynamic>? res =
-        await APIService.getRouteDetail(routeID: routeID);
+        await APIService.getRouteDetail(routeId: routeId);
 
     setState(() {
       isLoading = false;
       if (res != null) {
         routeDetail = BusRouteDetail.fromJson(res);
+        routeDetail?.direction0?.stops = routeDetail?.direction0?.stops!
+            .where((element) => element.stopID != null && element.stopID != "0")
+            .toList();
         routeDetail?.direction0?.stops?.asMap().forEach((index, value) {
           value.atIndex = index;
+          value.name = yourProvider.busStop
+              ?.where((element) => value.stopID == element.stopCode.toString())
+              .first
+              .stopName;
         });
+        routeDetail?.direction1?.stops = routeDetail?.direction1?.stops!
+            .where((element) => element.stopID != null && element.stopID != "0")
+            .toList();
         routeDetail?.direction1?.stops?.asMap().forEach((index, value) {
           value.atIndex = index;
         });
@@ -133,13 +146,13 @@ class _RouteStopPageState extends State<RouteStopPage> {
     }
   }
 
-  fetchPredictions({required BusStop stop}) async {
+  fetchPredictions({required InnerBusStop stop}) async {
     _timer?.cancel();
     setState(() {
       stop.isLoading = true;
     });
     List<BusPrediction>? predictions =
-        await APIService.getpredictions(stpid: stop.stopID ?? "");
+        await APIService.getpredictions(stpid: stop.stopID!);
 
     if (mounted) {
       setState(() {
@@ -147,7 +160,7 @@ class _RouteStopPageState extends State<RouteStopPage> {
         stop.isLoading = false;
         stop.predictions = predictions
             ?.where((element) =>
-                element.directionNum == directionModel?.directionNum)
+                element.directionNum == directionModel?.directionNum && element.routeId == widget.route.routeId)
             .toList();
       });
     }
@@ -171,16 +184,18 @@ class _RouteStopPageState extends State<RouteStopPage> {
 
   @override
   void initState() {
+    yourProvider = context.read<BusStopProvider>();
+
     deepCopyRote = BusRoute.fromJson(widget.route.toJson());
     if (widget.stop?.direction != null) {
       direction = widget.stop!.direction!;
     }
     // 路线详情
-    fetchRouteDetail(deepCopyRote.routeID!);
+    fetchRouteDetail(deepCopyRote.routeId!);
     // 自动刷新
     loadAutoRefresh();
     // 请求路线告警
-    fetchBusIncidents(deepCopyRote.routeID!);
+    fetchBusIncidents(deepCopyRote.routeId!);
     // Admob广告
     _loadAd();
     super.initState();
@@ -203,19 +218,16 @@ class _RouteStopPageState extends State<RouteStopPage> {
 
   @override
   Widget build(BuildContext context) {
-    String routeNavTitle = deepCopyRote.routeID ?? "";
-    String description = deepCopyRote.lineDescription ?? "";
+    String routeNavTitle = deepCopyRote.routeId ?? "";
+    String description = deepCopyRote.routeLongName ?? "";
     String destinationName =
         "to ${direction ? routeDetail?.direction0?.directionText : routeDetail?.direction1?.directionText} TO ${direction ? routeDetail?.direction0?.tripHeadsign : routeDetail?.direction1?.tripHeadsign}";
-    if (directionModel?.stops == null) {
-      return const Center(child: CircularProgressIndicator());
-    }
 
-    List<BusStop> favorStops = context.watch<FavoriteProvder>().favorites;
+    List<InnerBusStop> favorStops = context.watch<FavoriteProvder>().favorites;
     // // 遍历是否收藏
     if (directionModel?.stops != null) {
       for (var i = 0; i < directionModel!.stops!.length; i++) {
-        BusStop? tempStop = directionModel?.stops![i];
+        InnerBusStop? tempStop = directionModel?.stops![i];
         if (favorStops.contains(tempStop)) {
           tempStop?.isFavorite = true;
         } else {
@@ -239,6 +251,7 @@ class _RouteStopPageState extends State<RouteStopPage> {
               onPressed: () {
                 setState(() {
                   setState(() {
+                    selectedStop?.isSelected = false;
                     selectedStop?.predictions = null;
                     selectedStop = null;
                     setState(() {
@@ -257,75 +270,77 @@ class _RouteStopPageState extends State<RouteStopPage> {
       // No scheduled service today for the 29G
       body: isLoading
           ? const Center(child: CupertinoActivityIndicator())
-          : directionModel!.stops!.isEmpty
+          : directionModel == null || directionModel!.stops!.isEmpty
               ? Center(
                   child: Text(
-                      "No scheduled service today for the ${routeDetail?.routeID}",
+                      "No scheduled service today for the ${routeDetail?.routeId}",
                       style: Theme.of(context).textTheme.titleMedium))
-              : Column(
-                  children: [
-                    _getAdWidget(),
-                    Text(destinationName,
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.titleMedium),
-                    ValueListenableBuilder<int>(
-                        valueListenable: remindSeconds,
-                        builder:
-                            (BuildContext context, int value, Widget? child) {
-                          String autoRefreshString = autoRefresh
-                              ? "There are $value seconds left for the next refresh"
-                              : "Automatic refresh is not enabled, please refresh manually";
-                          return Text(autoRefreshString,
-                              textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.titleSmall);
-                        }),
-                    Expanded(
-                      child: ScrollablePositionedList.builder(
-                        physics:
-                            const AlwaysScrollableScrollPhysics(), // 允许始终滚动
-                        itemScrollController: itemScrollController,
-                        itemPositionsListener: itemPositionsListener,
-                        itemCount: directionModel?.stops?.length ?? 0,
-                        itemBuilder: (BuildContext context, int index) {
-                          BusStop? stop = directionModel?.stops?[index];
-                          stop?.belongToRoute = deepCopyRote;
+              : SafeArea(
+                  child: Column(
+                    children: [
+                      _getAdWidget(),
+                      Text(destinationName,
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.titleMedium),
+                      ValueListenableBuilder<int>(
+                          valueListenable: remindSeconds,
+                          builder:
+                              (BuildContext context, int value, Widget? child) {
+                            String autoRefreshString = autoRefresh
+                                ? "There are $value seconds left for the next refresh"
+                                : "Automatic refresh is not enabled, please refresh manually";
+                            return Text(autoRefreshString,
+                                textAlign: TextAlign.center,
+                                style: Theme.of(context).textTheme.titleSmall);
+                          }),
+                      Expanded(
+                        child: ScrollablePositionedList.builder(
+                          physics:
+                              const AlwaysScrollableScrollPhysics(), // 允许始终滚动
+                          itemScrollController: itemScrollController,
+                          itemPositionsListener: itemPositionsListener,
+                          itemCount: directionModel?.stops?.length ?? 0,
+                          itemBuilder: (BuildContext context, int index) {
+                            InnerBusStop? stop = directionModel?.stops?[index];
+                            stop?.belongToRoute = deepCopyRote;
 
-                          return GestureDetector(
-                            onTap: () {
-                              if (selectedStop != null &&
-                                  selectedStop!.isLoading) {
-                                return;
-                              }
-                              selectedStop?.isSelected = false;
-                              selectedStop?.predictions = null;
-                              stop.isSelected = true;
-                              selectedStop = stop;
-                              fetchPredictions(stop: selectedStop!);
-                            },
-                            child: RouteStopCell(
-                              stop: stop!,
-                              addFavorite: () {
-                                if (stop.isFavorite) {
-                                  // 移除
-                                  context
-                                      .read<FavoriteProvder>()
-                                      .removeFavorite(selectedStop!);
-                                } else {
-                                  // 收藏站点
-                                  context
-                                      .read<FavoriteProvder>()
-                                      .addFavorite(selectedStop!);
+                            return GestureDetector(
+                              onTap: () {
+                                if (selectedStop != null &&
+                                    selectedStop!.isLoading) {
+                                  return;
                                 }
-                                setState(() {
-                                  stop.isFavorite = !stop.isFavorite;
-                                });
+                                selectedStop?.isSelected = false;
+                                selectedStop?.predictions = null;
+                                stop.isSelected = true;
+                                selectedStop = stop;
+                                fetchPredictions(stop: selectedStop!);
                               },
-                            ),
-                          );
-                        },
+                              child: RouteStopCell(
+                                stop: stop!,
+                                addFavorite: () {
+                                  if (stop.isFavorite) {
+                                    // 移除
+                                    context
+                                        .read<FavoriteProvder>()
+                                        .removeFavorite(selectedStop!);
+                                  } else {
+                                    // 收藏站点
+                                    context
+                                        .read<FavoriteProvder>()
+                                        .addFavorite(selectedStop!);
+                                  }
+                                  setState(() {
+                                    stop.isFavorite = !stop.isFavorite;
+                                  });
+                                },
+                              ),
+                            );
+                          },
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
       floatingActionButton: (alertMessage != null &&
               alertMessage!.replaceAll("\n", "").isNotEmpty)

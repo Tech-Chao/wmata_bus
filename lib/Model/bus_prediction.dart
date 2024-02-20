@@ -2,7 +2,7 @@ class BusPrediction {
   String? directionNum;
   String? directionText;
   int? minutes;
-  String? routeID;
+  String? routeId;
   String? tripID;
   String? vehicleID;
 
@@ -10,7 +10,7 @@ class BusPrediction {
       {this.directionNum,
       this.directionText,
       this.minutes,
-      this.routeID,
+      this.routeId,
       this.tripID,
       this.vehicleID});
 
@@ -18,7 +18,7 @@ class BusPrediction {
     directionNum = json['DirectionNum'];
     directionText = json['DirectionText'];
     minutes = json['Minutes'];
-    routeID = json['RouteID'];
+    routeId = json['RouteID'];
     tripID = json['TripID'];
     vehicleID = json['VehicleID'];
   }
@@ -28,7 +28,7 @@ class BusPrediction {
     data['DirectionNum'] = directionNum;
     data['DirectionText'] = directionText;
     data['Minutes'] = minutes;
-    data['RouteID'] = routeID;
+    data['RouteID'] = routeId;
     data['TripID'] = tripID;
     data['VehicleID'] = vehicleID;
     return data;

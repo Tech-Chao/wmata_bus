@@ -1,9 +1,11 @@
 import 'dart:convert';
 
 import 'package:wmata_bus/Model/bus_route.dart';
+import 'package:wmata_bus/Model/bus_route_detail.dart';
 import 'package:wmata_bus/Model/bus_stop.dart';
 import 'package:wmata_bus/Providers/favorite_provider.dart';
 import 'package:wmata_bus/Providers/route_provider.dart';
+import 'package:wmata_bus/Providers/stop_provider.dart';
 import 'package:wmata_bus/Utils/const_tool.dart';
 import 'package:wmata_bus/Utils/favorite_storer.dart';
 import 'package:wmata_bus/Utils/store_manager.dart';
@@ -22,16 +24,20 @@ void main() async {
     debugPrint('AdMob initialization error: $e');
   }
   // 异步加载本地公交数据JSON
-  List<BusRoute>? routes = await loadLocalJson();
+  List<BusRoute>? routes = await loadRouteData();
+  List<BusStop>? stops = await loadStopsData();
 
   // String? haveFiveStarDate = await StoreManager.get("haveFiveStar");
   var res = await StoreManager.get("_isOldVersion");
-  List<BusStop> stops = await FavoriteStorer.getFavoriteStops();
+  List<InnerBusStop> favoriteStops = await FavoriteStorer.getFavoriteStops();
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(
         create: (context) => AppRouteProvider()..setBusRoutes(routes)),
     ChangeNotifierProvider(
-        create: (context) => FavoriteProvder()..setFavoriteStops(stops)),
+        create: (context) =>
+            FavoriteProvder()..setFavoriteStops(favoriteStops)),
+    ChangeNotifierProvider(
+        create: (context) => BusStopProvider()..setBusStops(stops)),
   ], child: MyApp(isOlderVersion: res == true.toString())));
 }
 
@@ -116,13 +122,14 @@ class MyApp extends StatelessWidget {
 }
 
 // 读取本地数据
-Future<List<BusRoute>?> loadLocalJson() async {
+Future<List<BusRoute>?> loadRouteData() async {
   try {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     // Attempt to load data from SharedPreferences
     String? prefsData = prefs.getString(ConstTool.kAllRouteskey);
     if (prefsData != null) {
-      List<Map<String, dynamic>> jsonMaps = json.decode(prefsData).cast<Map<String, dynamic>>() ?? [];
+      List<Map<String, dynamic>> jsonMaps =
+          json.decode(prefsData).cast<Map<String, dynamic>>() ?? [];
       List<BusRoute>? routes =
           jsonMaps.map((e) => BusRoute.fromJson(e)).toList();
       return routes;
@@ -136,6 +143,30 @@ Future<List<BusRoute>?> loadLocalJson() async {
     return routes;
   } catch (error) {
     debugPrint('Error loading local JSON: $error');
+    return [];
+  }
+}
+
+Future<List<BusStop>?> loadStopsData() async {
+  try {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    // Attempt to load data from SharedPreferences
+    String? prefsData = prefs.getString(ConstTool.kAllStopskey);
+    if (prefsData != null) {
+      List<Map<String, dynamic>> jsonMaps =
+          json.decode(prefsData).cast<Map<String, dynamic>>() ?? [];
+      List<BusStop>? stops = jsonMaps.map((e) => BusStop.fromJson(e)).toList();
+      return stops;
+    }
+
+    // 如果不存在则从 assets 中加载
+    String jsonString = await rootBundle.loadString('assets/stops.json');
+    List<dynamic> routeMaps = json.decode(jsonString);
+    List<BusStop>? stops =
+        routeMaps.map((dynamic e) => BusStop.fromJson(e)).toList();
+    return stops;
+  } catch (error) {
+    debugPrint('Error loading local stops JSON: $error');
     return [];
   }
 }

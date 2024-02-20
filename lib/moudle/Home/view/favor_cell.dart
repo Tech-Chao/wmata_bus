@@ -1,9 +1,10 @@
+import 'package:wmata_bus/Model/bus_route_detail.dart';
 import 'package:wmata_bus/Model/bus_stop.dart';
 import 'package:wmata_bus/Utils/utils.dart';
 import 'package:flutter/material.dart';
 
 class FavorCell extends StatelessWidget {
-  final BusStop stop;
+  final InnerBusStop stop;
   const FavorCell({super.key, required this.stop});
   @override
   Widget build(BuildContext context) {
@@ -26,9 +27,7 @@ class FavorCell extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(stop.name ?? "",
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleLarge),
+                      style: Theme.of(context).textTheme.titleLarge),
                 ),
                 // Text(stop.stpid != null ? " (${stop.stpid})" : "",
                 //     style: Theme.of(context)
@@ -38,9 +37,10 @@ class FavorCell extends StatelessWidget {
             ),
             Row(children: [
               Icon(Icons.directions_bus_rounded,
-                  color: Utils.hexToColor(stop.belongToRoute!.routeID!)),
+                  color:
+                      Utils.hexToColor(stop.belongToRoute?.routeColor ?? "")),
               Text(
-                  "${stop.belongToRoute?.routeID ?? ""} - ${stop.belongToRoute?.routeID ?? ""}",
+                  "${stop.belongToRoute?.routeId ?? ""} - ${stop.belongToRoute?.routeId ?? ""}",
                   style: Theme.of(context).textTheme.titleMedium),
             ]),
           ],

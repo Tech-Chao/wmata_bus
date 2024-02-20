@@ -26,25 +26,13 @@ class _MinePageViewState extends State<MinePageView> {
   bool _isOldVersion = false;
 
   bool autoRefresh = false;
-  // 横幅广告
-  BannerAd? _anchoredAdaptiveAd;
-  bool _isLoaded = false;
-  late Orientation _currentOrientation;
   String? lastUpdateTime;
   // 邮件url地址
   late final Uri emailLaunchUri;
   bool loading = false;
 
-  // @override
-  // void didChangeDependencies() {
-  //   super.didChangeDependencies();
-  //   _currentOrientation = MediaQuery.of(context).orientation;
-  //   _loadAd();
-  // }
-
   @override
   void initState() {
-    super.initState();
     emailLaunchUri = Uri(
       scheme: 'mailto',
       path: 'smwuchaoyu1991@gmail.com',
@@ -55,49 +43,7 @@ class _MinePageViewState extends State<MinePageView> {
     getOldVersion();
     getAutoRefreshState();
     loadLastUpdateTime();
-  }
-
-  Future<void> _loadAd() async {
-    await _anchoredAdaptiveAd?.dispose();
-    setState(() {
-      _anchoredAdaptiveAd = null;
-      _isLoaded = false;
-    });
-
-    final AnchoredAdaptiveBannerAdSize? size =
-        await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
-            MediaQuery.of(context).size.width.truncate());
-    if (size == null) {
-      return;
-    }
-
-    String adUnitId;
-    if (kDebugMode) {
-      adUnitId = Platform.isAndroid
-          ? ConstTool.kAndroidDebugBannerId
-          : ConstTool.kiOSDebugBannerId;
-    } else {
-      adUnitId = Platform.isAndroid
-          ? ConstTool.kAndroidReleaseBannerId
-          : ConstTool.kiOSReleaseBannerId;
-    }
-    _anchoredAdaptiveAd = BannerAd(
-      adUnitId: adUnitId,
-      size: size,
-      request: const AdRequest(),
-      listener: BannerAdListener(
-        onAdLoaded: (Ad ad) {
-          setState(() {
-            _anchoredAdaptiveAd = ad as BannerAd;
-            _isLoaded = true;
-          });
-        },
-        onAdFailedToLoad: (Ad ad, LoadAdError error) {
-          ad.dispose();
-        },
-      ),
-    );
-    return _anchoredAdaptiveAd!.load();
+    super.initState();
   }
 
   getAutoRefreshState() async {
