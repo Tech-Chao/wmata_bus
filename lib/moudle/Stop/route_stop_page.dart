@@ -134,6 +134,10 @@ class _RouteStopPageState extends State<RouteStopPage> {
             .toList();
         routeDetail?.direction1?.stops?.asMap().forEach((index, value) {
           value.atIndex = index;
+          value.name = yourProvider.busStop
+              ?.where((element) => value.stopID == element.stopCode.toString())
+              .first
+              .stopName;
         });
         directionModel =
             direction ? routeDetail?.direction0 : routeDetail?.direction1;
@@ -160,7 +164,8 @@ class _RouteStopPageState extends State<RouteStopPage> {
         stop.isLoading = false;
         stop.predictions = predictions
             ?.where((element) =>
-                element.directionNum == directionModel?.directionNum && element.routeId == widget.route.routeId)
+                element.directionNum == directionModel?.directionNum &&
+                element.routeId == widget.route.routeId)
             .toList();
       });
     }

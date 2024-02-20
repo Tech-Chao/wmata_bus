@@ -42,7 +42,7 @@ class _RouteListPageState extends State<RouteListPage> {
                   e.routeId!
                       .toLowerCase()
                       .contains(_controller.text.toLowerCase().trim()) ||
-                  e.routeId!
+                  e.routeLongName!
                       .toLowerCase()
                       .contains(_controller.text.toLowerCase().trim()))
               .toList();
