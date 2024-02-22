@@ -9,9 +9,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:wmata_bus/Model/bus_stop.dart';
 import 'package:wmata_bus/Providers/favorite_provider.dart';
-import 'package:wmata_bus/Providers/stop_provider.dart';
 import 'package:wmata_bus/Utils/const_tool.dart';
 import 'package:wmata_bus/Utils/store_manager.dart';
 import 'package:wmata_bus/moudle/Services/api_services.dart';
@@ -146,6 +144,9 @@ class _RouteStopPageState extends State<RouteStopPage> {
     if (widget.stop != null) {
       selectedStop = directionModel?.stops?[widget.stop?.atIndex ?? 0];
       selectedStop?.isSelected = true;
+      Future.delayed(const Duration(milliseconds: 30), () {
+        itemScrollController.jumpTo(index: selectedStop!.atIndex!);
+      });
       fetchPredictions(stop: selectedStop!);
     }
   }
@@ -226,8 +227,9 @@ class _RouteStopPageState extends State<RouteStopPage> {
     String routeNavTitle = deepCopyRote.routeId ?? "";
     String? descriptionTitle =
         deepCopyRote.lineDescription ?? deepCopyRote.name!;
-    String destinationName =
-        "to ${direction ? routeDetail?.direction0?.directionText : routeDetail?.direction1?.directionText} TO ${direction ? routeDetail?.direction0?.tripHeadsign : routeDetail?.direction1?.tripHeadsign}";
+    String? destinationName = direction
+        ? routeDetail?.direction0?.destinationName
+        : routeDetail?.direction1?.destinationName;
 
     List<InnerBusStop> favorStops = context.watch<FavoriteProvder>().favorites;
     // // 遍历是否收藏
@@ -287,7 +289,7 @@ class _RouteStopPageState extends State<RouteStopPage> {
                   child: Column(
                     children: [
                       _getAdWidget(),
-                      Text(destinationName,
+                      Text(destinationName!,
                           textAlign: TextAlign.center,
                           style: Theme.of(context).textTheme.titleMedium),
                       ValueListenableBuilder<int>(

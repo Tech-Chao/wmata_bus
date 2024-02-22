@@ -8,7 +8,7 @@
 PRODUCT_NAME = wmata_bus
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.techchao.wmataBus
+PRODUCT_BUNDLE_IDENTIFIER = com.techchao.wmatabus
 
 // The copyright displayed in application information
 PRODUCT_COPYRIGHT = Copyright © 2024 com.techchao. All rights reserved.

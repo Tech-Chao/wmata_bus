@@ -36,6 +36,8 @@ class Direction {
   List<InnerBusStop>? stops;
   String? tripHeadsign;
 
+  String? get destinationName => "to $directionText TO $tripHeadsign";
+
   Direction(
       {this.directionNum,
       this.directionText,
@@ -127,6 +129,7 @@ class InnerBusStop {
     if (json['belongTo'] != null) {
       belongToRoute = BusRoute.fromJson(json['belongTo']);
     }
+    atIndex = json['atIndex'];
   }
 
   Map<String, dynamic> toJson() {
@@ -139,6 +142,7 @@ class InnerBusStop {
 
     data['direction'] = direction;
     data['belongTo'] = belongToRoute?.toJson();
+    data['atIndex'] = atIndex;
     return data;
   }
 

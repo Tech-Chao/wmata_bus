@@ -4,7 +4,6 @@ import 'package:wmata_bus/Model/bus_incident.dart';
 import 'package:wmata_bus/Model/bus_prediction.dart';
 import 'package:wmata_bus/Model/bus_route.dart';
 import 'package:flutter/foundation.dart';
-import 'package:wmata_bus/Model/bus_stop.dart';
 
 class APIService {
   static String apiKey = "api_key";

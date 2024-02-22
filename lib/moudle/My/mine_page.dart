@@ -35,7 +35,7 @@ class _MinePageViewState extends State<MinePageView> {
   void initState() {
     emailLaunchUri = Uri(
       scheme: 'mailto',
-      path: 'wuchaoyu1991@gmail.com',
+      path: 'wuchaoyu122@gmail.com',
       query: encodeQueryParameters(<String, String>{
         'subject': 'DC Bus Tracker Feedback!',
       }),
@@ -172,65 +172,65 @@ class _MinePageViewState extends State<MinePageView> {
           children: [
             const SizedBox(height: 10),
             autoRefreshWidget(context),
-            const SizedBox(height: 10),
-            Container(
-              color: Colors.white,
-              child: ListTile(
-                leading: Text(
-                  "Larger Font",
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                trailing: Switch(
-                  value: _isOldVersion,
-                  onChanged: (bool value) {
-                    setState(() {
-                      _isOldVersion = value;
-                      StoreManager.save("_isOldVersion", value.toString());
-                      showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              title: Text(
-                                "Tip",
-                                style: Theme.of(context).textTheme.titleLarge,
-                              ),
-                              content: Text(
-                                  '"Larger Font" ${value ? "Enabled" : "Close"} is successful and will take effect after restarting. Do you want to exit immediately?',
-                                  style:
-                                      Theme.of(context).textTheme.titleLarge),
-                              actions: [
-                                TextButton(
-                                    onPressed: () {
-                                      Navigator.pop(context,
-                                          'CupertinoAlertDialog - Normal, cancel');
-                                    },
-                                    child: Text("Next Time",
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .titleLarge)),
-                                TextButton(
-                                  onPressed: () async {
-                                    Navigator.pop(context,
-                                        'CupertinoAlertDialog - Normal, ok');
-                                    exit(0);
-                                  },
-                                  child: Text("Quit",
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleLarge
-                                          ?.copyWith(
-                                              color: Theme.of(context)
-                                                  .primaryColor)),
-                                )
-                              ],
-                            );
-                          });
-                    });
-                  },
-                ),
-              ),
-            ),
-            const SizedBox(height: 30),
+            // const SizedBox(height: 10),
+            // Container(
+            //   color: Colors.white,
+            //   child: ListTile(
+            //     leading: Text(
+            //       "Larger Font",
+            //       style: Theme.of(context).textTheme.titleMedium,
+            //     ),
+            //     trailing: Switch(
+            //       value: _isOldVersion,
+            //       onChanged: (bool value) {
+            //         setState(() {
+            //           _isOldVersion = value;
+            //           StoreManager.save("_isOldVersion", value.toString());
+            //           showDialog(
+            //               context: context,
+            //               builder: (context) {
+            //                 return AlertDialog(
+            //                   title: Text(
+            //                     "Tip",
+            //                     style: Theme.of(context).textTheme.titleLarge,
+            //                   ),
+            //                   content: Text(
+            //                       '"Larger Font" ${value ? "Enabled" : "Close"} is successful and will take effect after restarting. Do you want to exit immediately?',
+            //                       style:
+            //                           Theme.of(context).textTheme.titleLarge),
+            //                   actions: [
+            //                     TextButton(
+            //                         onPressed: () {
+            //                           Navigator.pop(context,
+            //                               'CupertinoAlertDialog - Normal, cancel');
+            //                         },
+            //                         child: Text("Next Time",
+            //                             style: Theme.of(context)
+            //                                 .textTheme
+            //                                 .titleLarge)),
+            //                     TextButton(
+            //                       onPressed: () async {
+            //                         Navigator.pop(context,
+            //                             'CupertinoAlertDialog - Normal, ok');
+            //                         exit(0);
+            //                       },
+            //                       child: Text("Quit",
+            //                           style: Theme.of(context)
+            //                               .textTheme
+            //                               .titleLarge
+            //                               ?.copyWith(
+            //                                   color: Theme.of(context)
+            //                                       .primaryColor)),
+            //                     )
+            //                   ],
+            //                 );
+            //               });
+            //         });
+            //       },
+            //     ),
+            //   ),
+            // ),
+            const SizedBox(height: 20),
             updateWidget(context),
             const SizedBox(height: 10),
             Container(
