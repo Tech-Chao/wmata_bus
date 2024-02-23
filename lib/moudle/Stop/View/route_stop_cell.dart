@@ -31,7 +31,8 @@ class RouteStopCell extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
-                  child: Text("${stop.stopSequence ?? ""}. ${stop.stopName ?? ""}",
+                  child: Text(
+                      "${stop.stopSequence ?? ""}. ${stop.stopName ?? ""}",
                       style: stop.isSelected
                           ? Theme.of(context)
                               .textTheme
@@ -75,7 +76,9 @@ class RouteStopCell extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Text(
-                    e.waitinMins.toString(),
+                    (e.waitinMins == null || e.waitinMins! <= 0)
+                        ? "0"
+                        : e.waitinMins.toString(),
                     style: Theme.of(context)
                         .textTheme
                         .headlineLarge

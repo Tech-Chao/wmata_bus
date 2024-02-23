@@ -145,9 +145,13 @@ class _RouteStopPageState extends State<RouteStopPage> {
         await APIService.getpredictions(stopCode: stop.stopCode!);
     List<BusPrediction>? pfilterRedictions = predictions
         ?.where((element) =>
-            element.directionId.toString() == directionModel?.directionId &&
+            element.headsign == directionModel?.tripHeadsign &&
             element.routeId == widget.route.routeId)
         .toList();
+    if (pfilterRedictions != null && pfilterRedictions.isNotEmpty) {
+      pfilterRedictions
+          .sort((p1, p2) => p1.waitinMins!.compareTo(p2.waitinMins!));
+    }
     if (mounted) {
       setState(() {
         remindSeconds = ValueNotifier<int>(60);
@@ -239,26 +243,28 @@ class _RouteStopPageState extends State<RouteStopPage> {
           ],
         ),
         actions: [
-          IconButton(
-              onPressed: () {
-                setState(() {
-                  setState(() {
-                    _timer?.cancel();
-                    selectedStop?.isSelected = false;
-                    selectedStop?.predictions = null;
-                    selectedStop = null;
+          (routeDetail?.directions?.length == 1)
+              ? Container()
+              : IconButton(
+                  onPressed: () {
                     setState(() {
-                      direction = !direction;
+                      setState(() {
+                        _timer?.cancel();
+                        selectedStop?.isSelected = false;
+                        selectedStop?.predictions = null;
+                        selectedStop = null;
+                        setState(() {
+                          direction = !direction;
 
-                      directionModel = direction
-                          ? routeDetail?.directions?.last
-                          : routeDetail?.directions?.first;
+                          directionModel = direction
+                              ? routeDetail?.directions?.last
+                              : routeDetail?.directions?.first;
+                        });
+                        deepCopyRote = BusRoute.fromJson(widget.route.toJson());
+                      });
                     });
-                    deepCopyRote = BusRoute.fromJson(widget.route.toJson());
-                  });
-                });
-              },
-              icon: const Icon(Icons.change_circle_outlined, size: 35))
+                  },
+                  icon: const Icon(Icons.change_circle_outlined, size: 35))
         ],
       ),
       // No scheduled service today for the 29G

@@ -3,7 +3,7 @@ class BusPrediction {
   String? startTime;
   String? routeId;
   int? directionId;
-  String? departureTime;
+  int? departureTime;
   int? arrivalTime;
   String? stopId;
   int? waitInSecs;
