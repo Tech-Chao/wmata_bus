@@ -127,10 +127,10 @@ class _RouteStopPageState extends State<RouteStopPage> {
       }
     });
     if (widget.stop != null) {
-      selectedStop = directionModel?.stops?[widget.stop?.atIndex ?? 0];
+      selectedStop = directionModel?.stops?[(widget.stop!.stopSequence! - 1)];
       selectedStop?.isSelected = true;
       Future.delayed(const Duration(milliseconds: 30), () {
-        itemScrollController.jumpTo(index: selectedStop!.atIndex!);
+        itemScrollController.jumpTo(index: (selectedStop!.stopSequence! - 1));
       });
       fetchPredictions(stop: selectedStop!);
     }
@@ -211,7 +211,7 @@ class _RouteStopPageState extends State<RouteStopPage> {
   Widget build(BuildContext context) {
     String routeNavTitle = deepCopyRote.routeId ?? "";
     String? descriptionTitle =
-        deepCopyRote.routeShortName ?? deepCopyRote.routeLongName!;
+        deepCopyRote.routeLongName ?? deepCopyRote.routeShortName;
     String? destinationName = "to ${directionModel?.tripHeadsign}";
 
     List<BusStop> favorStops = context.watch<FavoriteProvder>().favorites;
@@ -234,7 +234,7 @@ class _RouteStopPageState extends State<RouteStopPage> {
           children: [
             Text(routeNavTitle,
                 style: Theme.of(context).textTheme.headlineMedium),
-            Text(descriptionTitle,
+            Text(descriptionTitle ?? "",
                 style: Theme.of(context).textTheme.headlineSmall),
           ],
         ),

@@ -4,13 +4,10 @@ import 'package:flutter/material.dart';
 class RouteCell extends StatelessWidget {
   final String titile;
   final String subtitle;
-  final String routeColor;
+  final String? routeColor;
 
   const RouteCell(
-      {Key? key,
-      required this.titile,
-      required this.subtitle,
-      required this.routeColor})
+      {Key? key, required this.titile, required this.subtitle, this.routeColor})
       : super(key: key);
 
   @override

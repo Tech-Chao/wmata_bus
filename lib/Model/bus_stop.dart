@@ -12,7 +12,6 @@ class BusStop {
   String? parentStation;
 
   // 自己增加
-  int? atIndex;
   bool isLoading = false;
   bool isFavorite = false;
   bool isSelected = false;
@@ -45,7 +44,6 @@ class BusStop {
     if (json['belongTo'] != null) {
       belongToRoute = BusRoute.fromJson(json['belongTo']);
     }
-    atIndex = json['atIndex'];
   }
 
   Map<String, dynamic> toJson() {
@@ -61,7 +59,6 @@ class BusStop {
 
     data['direction'] = direction;
     data['belongTo'] = belongToRoute?.toJson();
-    data['atIndex'] = atIndex;
 
     return data;
   }

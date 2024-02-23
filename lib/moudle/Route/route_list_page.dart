@@ -68,7 +68,7 @@ class _RouteListPageState extends State<RouteListPage> {
                           subtitle: route.routeLongName != null
                               ? route.routeLongName!
                               : route.routeShortName!,
-                          routeColor: ""),
+                          routeColor: route.routeColor!)
                     );
                   },
                 );
