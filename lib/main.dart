@@ -29,7 +29,7 @@ void main() async {
 
   // String? haveFiveStarDate = await StoreManager.get("haveFiveStar");
   var res = await StoreManager.get("_isOldVersion");
-  List<InnerBusStop> favoriteStops = await FavoriteStorer.getFavoriteStops();
+  List<BusStop> favoriteStops = await FavoriteStorer.getFavoriteStops();
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(
         create: (context) => AppRouteProvider()..setBusRoutes(routes)),

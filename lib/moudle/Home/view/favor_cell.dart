@@ -4,7 +4,7 @@ import 'package:wmata_bus/Utils/utils.dart';
 import 'package:flutter/material.dart';
 
 class FavorCell extends StatelessWidget {
-  final InnerBusStop stop;
+  final BusStop stop;
   const FavorCell({super.key, required this.stop});
   @override
   Widget build(BuildContext context) {
@@ -26,7 +26,7 @@ class FavorCell extends StatelessWidget {
               textBaseline: TextBaseline.alphabetic,
               children: [
                 Expanded(
-                  child: Text(stop.name ?? "",
+                  child: Text(stop.stopName ?? "",
                       style: Theme.of(context).textTheme.titleMedium),
                 ),
                 // Text(stop.stpid != null ? " (${stop.stpid})" : "",

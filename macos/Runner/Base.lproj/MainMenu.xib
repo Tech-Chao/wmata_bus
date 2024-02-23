@@ -273,7 +273,7 @@
                                                 <action selector="startSpeaking:" target="-1" id="654-Ng-kyl"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Stop Speaking" id="Oyz-dy-DGm">
+                                        <menuItem title="BusStop Speaking" id="Oyz-dy-DGm">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>
                                                 <action selector="stopSpeaking:" target="-1" id="dX8-6p-jy9"/>

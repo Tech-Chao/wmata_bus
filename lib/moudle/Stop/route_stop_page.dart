@@ -9,17 +9,18 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:wmata_bus/Model/bus_stop.dart';
 import 'package:wmata_bus/Providers/favorite_provider.dart';
 import 'package:wmata_bus/Utils/const_tool.dart';
 import 'package:wmata_bus/Utils/store_manager.dart';
 import 'package:wmata_bus/moudle/Services/api_services.dart';
-import 'package:wmata_bus/moudle/Stop/View/route_stop_cell.dart';
 import 'package:provider/provider.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:wmata_bus/moudle/Stop/View/route_stop_cell.dart';
 
 class RouteStopPage extends StatefulWidget {
   final BusRoute route;
-  final InnerBusStop? stop;
+  final BusStop? stop;
   const RouteStopPage({super.key, this.stop, required this.route});
 
   @override
@@ -36,7 +37,7 @@ class _RouteStopPageState extends State<RouteStopPage> {
   // 方向
   bool direction = true;
   // 选中站点
-  InnerBusStop? selectedStop;
+  BusStop? selectedStop;
   // 定时器
   Timer? _timer;
 
@@ -80,7 +81,7 @@ class _RouteStopPageState extends State<RouteStopPage> {
         }
         if (mounted &&
             !isLoading &&
-            selectedStop?.stopID != null &&
+            selectedStop?.stopId != null &&
             remindSeconds.value == 0) {
           fetchPredictions(stop: selectedStop!);
         }
@@ -97,9 +98,11 @@ class _RouteStopPageState extends State<RouteStopPage> {
         temp += element.description ?? "";
         temp += "\n";
       }
-      setState(() {
-        alertMessage = temp;
-      });
+      if (mounted) {
+        setState(() {
+          alertMessage = temp;
+        });
+      }
     }
   }
 
@@ -117,28 +120,10 @@ class _RouteStopPageState extends State<RouteStopPage> {
       isLoading = false;
       if (res != null) {
         routeDetail = BusRouteDetail.fromJson(res);
-        routeDetail?.direction0?.stops = routeDetail?.direction0?.stops!
-            .where((element) => element.stopID != null && element.stopID != "0")
-            .toList();
-        routeDetail?.direction0?.stops?.asMap().forEach((index, value) {
-          value.atIndex = index;
-          // value.name = yourProvider.busStop
-          //     ?.where((element) => value.stopID == element.stopCode.toString())
-          //     .first
-          //     .stopName;
-        });
-        routeDetail?.direction1?.stops = routeDetail?.direction1?.stops!
-            .where((element) => element.stopID != null && element.stopID != "0")
-            .toList();
-        routeDetail?.direction1?.stops?.asMap().forEach((index, value) {
-          value.atIndex = index;
-          // value.name = yourProvider.busStop
-          //     ?.where((element) => value.stopID == element.stopCode.toString())
-          //     .first
-          //     .stopName;
-        });
-        directionModel =
-            direction ? routeDetail?.direction0 : routeDetail?.direction1;
+
+        directionModel = direction
+            ? routeDetail?.directions?.last
+            : routeDetail?.directions?.first;
       }
     });
     if (widget.stop != null) {
@@ -151,16 +136,16 @@ class _RouteStopPageState extends State<RouteStopPage> {
     }
   }
 
-  fetchPredictions({required InnerBusStop stop}) async {
+  fetchPredictions({required BusStop stop}) async {
     _timer?.cancel();
     setState(() {
       stop.isLoading = true;
     });
     List<BusPrediction>? predictions =
-        await APIService.getpredictions(stpid: stop.stopID!);
+        await APIService.getpredictions(stopCode: stop.stopCode!);
     List<BusPrediction>? pfilterRedictions = predictions
         ?.where((element) =>
-            element.directionNum == directionModel?.directionNum &&
+            element.directionId.toString() == directionModel?.directionId &&
             element.routeId == widget.route.routeId)
         .toList();
     if (mounted) {
@@ -226,16 +211,14 @@ class _RouteStopPageState extends State<RouteStopPage> {
   Widget build(BuildContext context) {
     String routeNavTitle = deepCopyRote.routeId ?? "";
     String? descriptionTitle =
-        deepCopyRote.lineDescription ?? deepCopyRote.name!;
-    String? destinationName = direction
-        ? routeDetail?.direction0?.destinationName
-        : routeDetail?.direction1?.destinationName;
+        deepCopyRote.routeShortName ?? deepCopyRote.routeLongName!;
+    String? destinationName = "to ${directionModel?.tripHeadsign}";
 
-    List<InnerBusStop> favorStops = context.watch<FavoriteProvder>().favorites;
+    List<BusStop> favorStops = context.watch<FavoriteProvder>().favorites;
     // // 遍历是否收藏
     if (directionModel?.stops != null) {
       for (var i = 0; i < directionModel!.stops!.length; i++) {
-        InnerBusStop? tempStop = directionModel?.stops![i];
+        BusStop? tempStop = directionModel?.stops![i];
         if (favorStops.contains(tempStop)) {
           tempStop?.isFavorite = true;
         } else {
@@ -266,9 +249,10 @@ class _RouteStopPageState extends State<RouteStopPage> {
                     selectedStop = null;
                     setState(() {
                       direction = !direction;
+
                       directionModel = direction
-                          ? routeDetail?.direction0
-                          : routeDetail?.direction1;
+                          ? routeDetail?.directions?.last
+                          : routeDetail?.directions?.first;
                     });
                     deepCopyRote = BusRoute.fromJson(widget.route.toJson());
                   });
@@ -311,7 +295,7 @@ class _RouteStopPageState extends State<RouteStopPage> {
                           itemPositionsListener: itemPositionsListener,
                           itemCount: directionModel?.stops?.length ?? 0,
                           itemBuilder: (BuildContext context, int index) {
-                            InnerBusStop? stop = directionModel?.stops?[index];
+                            BusStop? stop = directionModel?.stops?[index];
                             stop?.belongToRoute = deepCopyRote;
 
                             return GestureDetector(

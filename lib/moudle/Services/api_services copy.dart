@@ -13,8 +13,7 @@ class APIService {
   static Future<List<BusRoute>?> updateRouteInfo() async {
     try {
       var httpClient = HttpClient();
-      var uri = Uri.parse(
-          'https://unifiedapieast.dcmetroapp.com/agency/WMATA/routes');
+      var uri = Uri.parse('https://unifiedapieast.dcmetroapp.com/agency/WMATA/routes');
       var request = await httpClient.getUrl(uri);
       request.headers.add(apiKey, key);
       var response = await request.close();
@@ -22,9 +21,9 @@ class APIService {
       if (response.statusCode == HttpStatus.ok) {
         // Read response
         var responseBody = await utf8.decodeStream(response);
-        List<dynamic> data = json.decode(responseBody);
+        Map<String, dynamic> data = json.decode(responseBody);
         List<Map<String, dynamic>> routeMaps =
-            data.cast<Map<String, dynamic>>();
+            (data["Routes"] as List<dynamic>).cast<Map<String, dynamic>>();
         List<BusRoute> routes =
             routeMaps.map((e) => BusRoute.fromJson(e)).toList();
         return routes;
@@ -44,7 +43,7 @@ class APIService {
     try {
       var httpClient = HttpClient();
       var uri = Uri.parse(
-          'https://unifiedapieast.dcmetroapp.com/agency/WMATA/routes/$routeId');
+          'https://api.wmata.com/Bus.svc/json/jRouteDetails?RouteID=$routeId');
       var request = await httpClient.getUrl(uri);
       request.headers.add(apiKey, key);
       var response = await request.close();
@@ -98,12 +97,12 @@ class APIService {
 
   // https://api.wmata.com/NextBusService.svc/json/jPredictions[?StopID]
   static Future<List<BusPrediction>?> getpredictions(
-      {required String stopCode}) async {
+      {required String stpid}) async {
     try {
       var httpClient = HttpClient();
 // ID有问题
       var uri = Uri.parse(
-          'https://unifiedapieast.dcmetroapp.com/agency/WMATA/stops/$stopCode/realtimearrivals');
+          'https://api.wmata.com/NextBusService.svc/json/jPredictions?StopID=$stpid');
       var request = await httpClient.getUrl(uri);
       request.headers.add(apiKey, key);
       var response = await request.close();
@@ -113,7 +112,7 @@ class APIService {
         var responseBody = await utf8.decodeStream(response);
         Map<String, dynamic> data = json.decode(responseBody);
         List<Map<String, dynamic>> predictionMaps =
-            (data["predictions"] as List<dynamic>).cast<Map<String, dynamic>>();
+            (data["Predictions"] as List<dynamic>).cast<Map<String, dynamic>>();
         List<BusPrediction>? predictions =
             predictionMaps.map((e) => BusPrediction.fromJson(e)).toList();
         return predictions;

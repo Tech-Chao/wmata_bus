@@ -1,30 +1,26 @@
 import 'dart:convert';
-
-import 'package:wmata_bus/Model/bus_route_detail.dart';
-
+import 'package:wmata_bus/Model/bus_stop.dart';
 import 'package:wmata_bus/Utils/store_manager.dart';
 
 const kFavoriteRoutes = "kFavoriteRoutes";
 
 class FavoriteStorer {
   /// 收藏站点
-  static Future<List<InnerBusStop>> getFavoriteStops() async {
+  static Future<List<BusStop>> getFavoriteStops() async {
     String? jsonString = await StoreManager.get(kFavoriteRoutes);
     if (jsonString == null) {
-      return <InnerBusStop>[];
+      return <BusStop>[];
     }
     List<Map<String, dynamic>> res =
         List<Map<String, dynamic>>.from(json.decode(jsonString));
-    List<InnerBusStop> stops =
-        res.map((e) => InnerBusStop.fromJson(e)).toList();
+    List<BusStop> stops = res.map((e) => BusStop.fromJson(e)).toList();
     return stops;
   }
 
   // 存放收藏站点
-  static Future<List<InnerBusStop>> addFavoriteStops(
-      InnerBusStop addStop) async {
-    List<InnerBusStop> favorStops = await FavoriteStorer.getFavoriteStops();
-    if (addStop.stopID == null) {
+  static Future<List<BusStop>> addFavoriteStops(BusStop addStop) async {
+    List<BusStop> favorStops = await FavoriteStorer.getFavoriteStops();
+    if (addStop.stopId == null) {
       return favorStops;
     }
     favorStops.insert(0, addStop);
@@ -33,11 +29,10 @@ class FavoriteStorer {
     return favorStops;
   }
 
-  static Future<List<InnerBusStop>> removeFavoriteStop(
-      InnerBusStop removeStop) async {
-    List<InnerBusStop> favorStops = await FavoriteStorer.getFavoriteStops();
+  static Future<List<BusStop>> removeFavoriteStop(BusStop removeStop) async {
+    List<BusStop> favorStops = await FavoriteStorer.getFavoriteStops();
     for (var stop in favorStops) {
-      if (removeStop.stopID == stop.stopID) {
+      if (removeStop.stopId == stop.stopId) {
         favorStops.remove(stop);
         break;
       }

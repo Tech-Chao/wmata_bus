@@ -1,9 +1,9 @@
 import 'package:wmata_bus/Model/bus_route.dart';
 import 'package:wmata_bus/Providers/route_provider.dart';
 import 'package:wmata_bus/moudle/Route/View/route_cell.dart';
-import 'package:wmata_bus/moudle/Stop/route_stop_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:wmata_bus/moudle/Stop/route_stop_page.dart';
 
 class RouteListPage extends StatefulWidget {
   const RouteListPage({super.key});
@@ -42,7 +42,7 @@ class _RouteListPageState extends State<RouteListPage> {
                   e.routeId!
                       .toLowerCase()
                       .contains(_controller.text.toLowerCase().trim()) ||
-                  e.name!
+                  e.routeShortName!
                       .toLowerCase()
                       .contains(_controller.text.toLowerCase().trim()))
               .toList();
@@ -65,9 +65,9 @@ class _RouteListPageState extends State<RouteListPage> {
                       },
                       child: RouteCell(
                           titile: route.routeId!,
-                          subtitle: route.lineDescription != null
-                              ? route.lineDescription!
-                              : route.name!,
+                          subtitle: route.routeLongName != null
+                              ? route.routeLongName!
+                              : route.routeShortName!,
                           routeColor: ""),
                     );
                   },

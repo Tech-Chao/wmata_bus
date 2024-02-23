@@ -8,13 +8,13 @@ import 'package:wmata_bus/Utils/app_open_ad_manager.dart';
 import 'package:wmata_bus/Utils/const_tool.dart';
 import 'package:wmata_bus/Utils/store_manager.dart';
 import 'package:wmata_bus/moudle/Home/view/favor_cell.dart';
-import 'package:wmata_bus/moudle/Stop/route_stop_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wmata_bus/moudle/Stop/route_stop_page.dart';
 
 class FavoritePage extends StatefulWidget {
   final Function(int) onMyTap;
@@ -195,21 +195,21 @@ class _FavoritePageState extends State<FavoritePage> {
                 // 切換Tab
                 widget.onMyTap(1);
               },
-              child: Text("Add Stop",
+              child: Text("Add BusStop",
                   style: Theme.of(context).textTheme.headlineSmall))
         ],
       ),
     );
   }
 
-  Widget mainBodyWidget(List<InnerBusStop> favorites) {
+  Widget mainBodyWidget(List<BusStop> favorites) {
     return ListView.builder(
       itemCount: favorites.length,
       itemBuilder: (BuildContext context, int index) {
         return GestureDetector(
             onTap: () {
               // 跳转详情页 child: RouteCell(route: null),
-              InnerBusStop stop = favorites[index];
+              BusStop stop = favorites[index];
               Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                 return RouteStopPage(
                   route: stop.belongToRoute!,
