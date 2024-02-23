@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'dart:io' show Platform;
@@ -12,13 +13,19 @@ class AppOpenAdManager {
 
   AppOpenAd? _appOpenAd;
   bool _isShowingAd = false;
-
-  String adUnitId = Platform.isAndroid
-      ? ConstTool.kAndroidDebugOpenAdId
-      : ConstTool.kiOSDebugOpenAdId;
+  late String adUnitId;
 
   /// Load an [AppOpenAd].
   void loadAd() {
+    if (kDebugMode) {
+      adUnitId = Platform.isAndroid
+          ? ConstTool.kAndroidDebugOpenAdId
+          : ConstTool.kiOSDebugOpenAdId;
+    } else {
+      adUnitId = Platform.isAndroid
+          ? ConstTool.kAndroidReleaseBannerId
+          : ConstTool.kiOSReleaseBannerId;
+    }
     AppOpenAd.load(
       adUnitId: adUnitId,
       orientation: AppOpenAd.orientationPortrait,

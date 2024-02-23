@@ -260,7 +260,7 @@ class _FavoritePageState extends State<FavoritePage> {
                   content: Text.rich(
                     TextSpan(children: [
                       TextSpan(
-                          text: "Whether to delete all data",
+                          text: "Clear favorites?",
                           style: Theme.of(context).textTheme.titleMedium),
                     ]),
                   ),
