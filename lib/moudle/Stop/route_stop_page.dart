@@ -158,16 +158,16 @@ class _RouteStopPageState extends State<RouteStopPage> {
     });
     List<BusPrediction>? predictions =
         await APIService.getpredictions(stpid: stop.stopID!);
-
+    List<BusPrediction>? pfilterRedictions = predictions
+        ?.where((element) =>
+            element.directionNum == directionModel?.directionNum &&
+            element.routeId == widget.route.routeId)
+        .toList();
     if (mounted) {
       setState(() {
         remindSeconds = ValueNotifier<int>(60);
         stop.isLoading = false;
-        stop.predictions = predictions
-            ?.where((element) =>
-                element.directionNum == directionModel?.directionNum &&
-                element.routeId == widget.route.routeId)
-            .toList();
+        stop.predictions = pfilterRedictions;
       });
     }
     if (autoRefresh && selectedStop != null) {

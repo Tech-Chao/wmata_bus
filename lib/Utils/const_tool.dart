@@ -4,10 +4,14 @@ class ConstTool {
       "ca-app-pub-3940256099942544/6300978111";
   static String kAndroidDebugInterstitialrId =
       "ca-app-pub-3940256099942544/1033173712";
+  static String kAndroidDebugOpenAdId =
+      "ca-app-pub-3940256099942544/9257395921";
 
   static String kiOSDebugBannerId = "ca-app-pub-3940256099942544/2934735716";
   static String kiOSDebugInterstitialrId =
       "ca-app-pub-3940256099942544/4411468910";
+  static String kiOSDebugOpenAdId =
+      "ca-app-pub-3940256099942544/5575463023";
 
   //  release
   static String kAndroidReleaseBannerId = "";

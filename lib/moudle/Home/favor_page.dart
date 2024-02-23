@@ -3,6 +3,8 @@ import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:wmata_bus/Model/bus_route_detail.dart';
 import 'package:wmata_bus/Model/bus_stop.dart';
 import 'package:wmata_bus/Providers/favorite_provider.dart';
+import 'package:wmata_bus/Utils/app_lifecycle_reactor.dart';
+import 'package:wmata_bus/Utils/app_open_ad_manager.dart';
 import 'package:wmata_bus/Utils/const_tool.dart';
 import 'package:wmata_bus/Utils/store_manager.dart';
 import 'package:wmata_bus/moudle/Home/view/favor_cell.dart';
@@ -31,6 +33,8 @@ class _FavoritePageState extends State<FavoritePage> {
   BannerAd? _anchoredAdaptiveAd;
   bool _isLoaded = false;
   late Orientation _currentOrientation;
+  // 开屏广告
+  late AppLifecycleReactor _appLifecycleReactor;
 
   @override
   void initState() {
@@ -39,6 +43,11 @@ class _FavoritePageState extends State<FavoritePage> {
         .addPostFrameCallback((_) => initPlugin());
     WidgetsBinding.instance
         .addPostFrameCallback((_) => checkAppLaunchCountAndReview());
+
+    AppOpenAdManager appOpenAdManager = AppOpenAdManager()..loadAd();
+    _appLifecycleReactor =
+        AppLifecycleReactor(appOpenAdManager: appOpenAdManager);
+    _appLifecycleReactor.listenToAppStateChanges();
   }
 
   void checkAppLaunchCountAndReview() async {
@@ -76,7 +85,7 @@ class _FavoritePageState extends State<FavoritePage> {
       print("UUID: $uuid");
     }
   }
-  
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
