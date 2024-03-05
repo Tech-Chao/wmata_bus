@@ -23,8 +23,8 @@ class AppOpenAdManager {
           : ConstTool.kiOSDebugOpenAdId;
     } else {
       adUnitId = Platform.isAndroid
-          ? ConstTool.kAndroidReleaseBannerId
-          : ConstTool.kiOSReleaseBannerId;
+          ? ConstTool.kAndroidReleaseOpenAdId
+          : ConstTool.kiOSReleaseOpenAdId;
     }
     AppOpenAd.load(
       adUnitId: adUnitId,
