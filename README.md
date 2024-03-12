@@ -1,16 +1,16 @@
 # wmata_bus
 
-A new Flutter project.
+迈阿密公交追踪
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+- 使用 https://unifiedapieast.dcmetroapp.com/ 借用第三方获取路线等其他信息。
+- 使用 https://api.wmata.com/Incidents.svc/json/BusIncidents 获取事件信息
 
-A few resources to get you started if this is your first Flutter project:
+# TODO
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+1. 修改为官方或者自己的API
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+
+
+
