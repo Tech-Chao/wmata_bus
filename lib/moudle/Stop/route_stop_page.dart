@@ -198,6 +198,9 @@ class _RouteStopPageState extends State<RouteStopPage> {
   Widget build(BuildContext context) {
     String routeNavTitle = widget.routeID;
     String? descriptionTitle = routeDetail?.name ?? "";
+
+    descriptionTitle = descriptionTitle.split(' - ').sublist(1).join(' - ');
+
     Direction? directionModel =
         direction ? routeDetail?.direction0 : routeDetail?.direction1;
     String? destinationName = "${directionModel?.tripHeadsign}";
@@ -265,25 +268,29 @@ class _RouteStopPageState extends State<RouteStopPage> {
                     children: [
                       _getAdWidget(),
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: CupertinoSlidingSegmentedControl<String>(
-                          thumbColor: const Color(0xff333333),
-                          //子标
-                          children: segmentedWidgets,
-                          //当前选中的索引
-                          groupValue: directionModel?.directionText,
-                          //点击回调
-                          onValueChanged: (String? value) {
-                            setState(() {
-                              if (directionModel?.directionText != value) {
-                                direction = !direction;
-                                directionModel = direction
-                                    ? routeDetail?.direction1
-                                    : routeDetail?.direction0;
-                              }
-                            });
-                          },
-                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 5),
+                        child: segmentedWidgets.length > 1
+                            ? CupertinoSlidingSegmentedControl<String>(
+                                thumbColor: const Color(0xff333333),
+                                //子标
+                                children: segmentedWidgets,
+                                //当前选中的索引
+                                groupValue: directionModel.directionText,
+                                //点击回调
+                                onValueChanged: (String? value) {
+                                  setState(() {
+                                    if (directionModel?.directionText !=
+                                        value) {
+                                      direction = !direction;
+                                      directionModel = direction
+                                          ? routeDetail?.direction1
+                                          : routeDetail?.direction0;
+                                    }
+                                  });
+                                },
+                              )
+                            : Text(directionModel.directionText ?? "",
+                                style: Theme.of(context).textTheme.titleMedium),
                       ),
                       Text('TO $destinationName',
                           textAlign: TextAlign.center,
@@ -295,9 +302,13 @@ class _RouteStopPageState extends State<RouteStopPage> {
                             String autoRefreshString = autoRefresh
                                 ? "There are $value seconds left for the next refresh"
                                 : "Automatic refresh is not enabled, please refresh manually";
-                            return Text(autoRefreshString,
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context).textTheme.titleSmall);
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: Text(autoRefreshString,
+                                  textAlign: TextAlign.center,
+                                  style:
+                                      Theme.of(context).textTheme.titleSmall),
+                            );
                           }),
                       Expanded(
                         child: ScrollablePositionedList.builder(

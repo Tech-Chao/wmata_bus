@@ -1,4 +1,3 @@
-import 'package:wmata_bus/Model/bus_route.dart';
 import 'package:wmata_bus/Model/bus_route_new.dart';
 import 'package:wmata_bus/Providers/route_provider.dart';
 import 'package:wmata_bus/moudle/Route/View/route_cell.dart';
@@ -46,7 +45,7 @@ class _BusRouteListState extends State<BusRouteList> {
                           return RouteStopPage(routeID: route.routeID ?? "");
                         }));
                       },
-                      child: RouteCell(
+                      child: BusRouteCell(
                           title: route.routeID ?? "",
                           subtitle: route.name ?? ""));
                 },

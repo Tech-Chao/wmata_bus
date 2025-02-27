@@ -1,16 +1,12 @@
 import 'dart:convert';
-import 'dart:io';
 
-import 'package:wmata_bus/Model/bus_route.dart';
 import 'package:wmata_bus/Model/bus_route_new.dart';
 import 'package:wmata_bus/Providers/route_provider.dart';
 import 'package:wmata_bus/Utils/const_tool.dart';
 import 'package:wmata_bus/Utils/store_manager.dart';
 import 'package:wmata_bus/moudle/Services/api_services_new.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -24,8 +20,6 @@ class MinePageView extends StatefulWidget {
 }
 
 class _MinePageViewState extends State<MinePageView> {
-  bool _isOldVersion = false;
-
   bool autoRefresh = false;
   String? lastUpdateTime;
   // 邮件url地址
@@ -36,12 +30,11 @@ class _MinePageViewState extends State<MinePageView> {
   void initState() {
     emailLaunchUri = Uri(
       scheme: 'mailto',
-      path: 'wuchaoyu122@gmail.com',
+      path: 'wuchaoyu1991@gmail.com',
       query: encodeQueryParameters(<String, String>{
         'subject': 'DC Bus Tracker Feedback!',
       }),
     );
-    getOldVersion();
     getAutoRefreshState();
     loadLastUpdateTime();
     super.initState();
@@ -52,14 +45,6 @@ class _MinePageViewState extends State<MinePageView> {
     var result = (res == true.toString());
     setState(() {
       autoRefresh = result;
-    });
-  }
-
-  getOldVersion() async {
-    String? res = await StoreManager.get("_isOldVersion");
-    var result = (res == true.toString());
-    setState(() {
-      _isOldVersion = result;
     });
   }
 

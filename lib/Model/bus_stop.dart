@@ -1,6 +1,4 @@
-import 'package:wmata_bus/Model/bus_prediction.dart';
 import 'package:wmata_bus/Model/bus_prediction_new.dart';
-import 'package:wmata_bus/Model/bus_route_new.dart';
 
 class BusStop {
   double? lat;

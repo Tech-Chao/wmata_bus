@@ -1,4 +1,3 @@
-import 'package:wmata_bus/Model/bus_prediction_new.dart';
 import 'package:wmata_bus/Model/bus_stop.dart';
 
 class BusRouteDetailNew {

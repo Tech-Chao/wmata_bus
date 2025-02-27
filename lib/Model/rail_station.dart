@@ -26,7 +26,7 @@ class RailStation {
 
   RailStation.fromJson(Map<String, dynamic> json) {
     address =
-        json['Address'] != null ? new Address.fromJson(json['Address']) : null;
+        json['Address'] != null ? Address.fromJson(json['Address']) : null;
     code = json['Code'];
     lat = json['Lat'];
     lineCode1 = json['LineCode1'];

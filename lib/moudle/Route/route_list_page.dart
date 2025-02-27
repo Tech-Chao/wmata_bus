@@ -63,7 +63,7 @@ class _RouteListPageState extends State<RouteListPage> {
                             return RouteStopPage(routeID: route.routeID ?? "");
                           }));
                         },
-                        child: RouteCell(
+                        child: BusRouteCell(
                             title: route.routeID!, subtitle: route.name!));
                   },
                 );
