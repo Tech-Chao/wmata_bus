@@ -6,7 +6,7 @@ const kFavoriteRoutes = "kFavoriteRoutes";
 
 class FavoriteStorer {
   /// 收藏站点
-  static Future<List<BusStop>> getFavoriteStops() async {
+  static Future<List<BusStop>> getFavoriteBusStops() async {
     String? jsonString = await StoreManager.get(kFavoriteRoutes);
     if (jsonString == null) {
       return <BusStop>[];
@@ -18,9 +18,9 @@ class FavoriteStorer {
   }
 
   // 存放收藏站点
-  static Future<List<BusStop>> addFavoriteStops(BusStop addStop) async {
-    List<BusStop> favorStops = await FavoriteStorer.getFavoriteStops();
-    if (addStop.stopId == null) {
+  static Future<List<BusStop>> addFavoriteBusStops(BusStop addStop) async {
+    List<BusStop> favorStops = await FavoriteStorer.getFavoriteBusStops();
+    if (addStop.stopID == null) {
       return favorStops;
     }
     favorStops.insert(0, addStop);
@@ -29,10 +29,10 @@ class FavoriteStorer {
     return favorStops;
   }
 
-  static Future<List<BusStop>> removeFavoriteStop(BusStop removeStop) async {
-    List<BusStop> favorStops = await FavoriteStorer.getFavoriteStops();
+  static Future<List<BusStop>> removeFavoriteBusStop(BusStop removeStop) async {
+      List<BusStop> favorStops = await FavoriteStorer.getFavoriteBusStops();
     for (var stop in favorStops) {
-      if (removeStop.stopId == stop.stopId) {
+      if (removeStop.stopID == stop.stopID) {
         favorStops.remove(stop);
         break;
       }
@@ -41,7 +41,7 @@ class FavoriteStorer {
     StoreManager.save(kFavoriteRoutes, jsonString);
     return favorStops;
   }
-
+  
   static Future<bool> clear() async {
     return StoreManager.remove(kFavoriteRoutes);
   }

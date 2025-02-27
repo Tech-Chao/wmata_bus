@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:app_tracking_transparency/app_tracking_transparency.dart';
-import 'package:wmata_bus/Model/bus_route_detail.dart';
 import 'package:wmata_bus/Model/bus_stop.dart';
 import 'package:wmata_bus/Providers/favorite_provider.dart';
 import 'package:wmata_bus/Utils/app_lifecycle_reactor.dart';
@@ -212,7 +211,7 @@ class _FavoritePageState extends State<FavoritePage> {
               BusStop stop = favorites[index];
               Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                 return RouteStopPage(
-                  route: stop.belongToRoute!,
+                  routeID: stop.routeID ?? "",
                   stop: stop,
                 );
               }));

@@ -1,11 +1,10 @@
 import 'dart:convert';
 
-import 'package:wmata_bus/Model/bus_route.dart';
-import 'package:wmata_bus/Model/bus_route_detail.dart';
+import 'package:wmata_bus/Model/bus_route_new.dart';
 import 'package:wmata_bus/Model/bus_stop.dart';
+import 'package:wmata_bus/Model/rail_station.dart';
 import 'package:wmata_bus/Providers/favorite_provider.dart';
 import 'package:wmata_bus/Providers/route_provider.dart';
-import 'package:wmata_bus/Providers/stop_provider.dart';
 import 'package:wmata_bus/Utils/const_tool.dart';
 import 'package:wmata_bus/Utils/favorite_storer.dart';
 import 'package:wmata_bus/Utils/store_manager.dart';
@@ -24,15 +23,17 @@ void main() async {
     debugPrint('AdMob initialization error: $e');
   }
   // 异步加载本地公交数据JSON
-  List<BusRoute>? routes = await loadRouteData();
-  // List<BusStop>? stops = await loadStopsData();
+  List<BusRouteNew>? routes = await loadRouteData();
+  List<RailStation>? stations = await loadRailStationsData();
 
   // String? haveFiveStarDate = await StoreManager.get("haveFiveStar");
   var res = await StoreManager.get("_isOldVersion");
-  List<BusStop> favoriteStops = await FavoriteStorer.getFavoriteStops();
+  List<BusStop> favoriteStops = await FavoriteStorer.getFavoriteBusStops();
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(
-        create: (context) => AppRouteProvider()..setBusRoutes(routes)),
+        create: (context) => AppRouteProvider()
+          ..setBusRoutes(routes)
+          ..setRailStations(stations)),
     ChangeNotifierProvider(
         create: (context) =>
             FavoriteProvder()..setFavoriteStops(favoriteStops)),
@@ -72,7 +73,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'NYC Bus',
+        title: 'DC Bus Tracker',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
             brightness: Brightness.light,
@@ -122,24 +123,23 @@ class MyApp extends StatelessWidget {
 }
 
 // 读取本地数据
-Future<List<BusRoute>?> loadRouteData() async {
+Future<List<BusRouteNew>?> loadRouteData() async {
   try {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    // Attempt to load data from SharedPreferences
     String? prefsData = prefs.getString(ConstTool.kAllRouteskey);
     if (prefsData != null) {
       List<Map<String, dynamic>> jsonMaps =
           json.decode(prefsData).cast<Map<String, dynamic>>() ?? [];
-      List<BusRoute>? routes =
-          jsonMaps.map((e) => BusRoute.fromJson(e)).toList();
+      List<BusRouteNew>? routes =
+          jsonMaps.map((e) => BusRouteNew.fromJson(e)).toList();
       return routes;
     }
 
     // 如果不存在则从 assets 中加载
-    String jsonString = await rootBundle.loadString('assets/routes.json');
+    String jsonString = await rootBundle.loadString('assets/bus_routes.json');
     List<dynamic> routeMaps = json.decode(jsonString);
-    List<BusRoute>? routes =
-        routeMaps.map((dynamic e) => BusRoute.fromJson(e)).toList();
+    List<BusRouteNew>? routes =
+        routeMaps.map((dynamic e) => BusRouteNew.fromJson(e)).toList();
     return routes;
   } catch (error) {
     debugPrint('Error loading local JSON: $error');
@@ -147,26 +147,26 @@ Future<List<BusRoute>?> loadRouteData() async {
   }
 }
 
-Future<List<BusStop>?> loadStopsData() async {
+Future<List<RailStation>?> loadRailStationsData() async {
   try {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    // Attempt to load data from SharedPreferences
-    String? prefsData = prefs.getString(ConstTool.kAllStopskey);
+    String? prefsData = prefs.getString(ConstTool.kAllRailStationskey);
     if (prefsData != null) {
       List<Map<String, dynamic>> jsonMaps =
           json.decode(prefsData).cast<Map<String, dynamic>>() ?? [];
-      List<BusStop>? stops = jsonMaps.map((e) => BusStop.fromJson(e)).toList();
-      return stops;
+      List<RailStation>? stations =
+          jsonMaps.map((e) => RailStation.fromJson(e)).toList();
+      return stations;
     }
 
     // 如果不存在则从 assets 中加载
-    String jsonString = await rootBundle.loadString('assets/stops.json');
+    String jsonString = await rootBundle.loadString('assets/rail_station.json');
     List<dynamic> routeMaps = json.decode(jsonString);
-    List<BusStop>? stops =
-        routeMaps.map((dynamic e) => BusStop.fromJson(e)).toList();
-    return stops;
+    List<RailStation>? stations =
+        routeMaps.map((dynamic e) => RailStation.fromJson(e)).toList();
+    return stations;
   } catch (error) {
-    debugPrint('Error loading local stops JSON: $error');
+    debugPrint('Error loading local rail stations JSON: $error');
     return [];
   }
 }

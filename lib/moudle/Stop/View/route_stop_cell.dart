@@ -6,41 +6,65 @@ import 'package:wmata_bus/Model/bus_stop.dart';
 
 class RouteStopCell extends StatelessWidget {
   final BusStop stop;
+  final String? atIndex;
   final void Function() addFavorite;
 
   const RouteStopCell({
     super.key,
     required this.stop,
+    this.atIndex,
     required this.addFavorite,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.all(Radius.circular(10)),
-      ),
-      margin: const EdgeInsets.fromLTRB(15, 10, 15, 0),
+    return Card(
+      elevation: 0,
+      color: Colors.white,
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       child: Padding(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                if (atIndex != null)
+                  Container(
+                    width: 30,
+                    height: 30,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).primaryColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Text(
+                      atIndex!,
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                            color: Theme.of(context).primaryColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                  ),
                 Expanded(
-                  child: Text(
-                      "${stop.stopSequence ?? ""}. ${stop.stopName ?? ""}",
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Text(
+                      stop.name ?? "",
+                      softWrap: true,
                       style: stop.isSelected
-                          ? Theme.of(context)
-                              .textTheme
-                              .titleMedium
-                              ?.copyWith(fontWeight: FontWeight.bold)
-                          : Theme.of(context).textTheme.titleMedium),
+                          ? Theme.of(context).textTheme.titleMedium?.copyWith(
+                              color: Theme.of(context).primaryColor,
+                              fontWeight: FontWeight.bold)
+                          : Theme.of(context).textTheme.titleMedium,
+                    ),
+                  ),
                 ),
-                cellTrailWidget(context)
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  child: cellTrailWidget(context),
+                ),
               ],
             ),
             etaInfoWidget(context),
@@ -50,77 +74,96 @@ class RouteStopCell extends StatelessWidget {
     );
   }
 
-  Widget cellTrailWidget(context) {
+  Widget cellTrailWidget(BuildContext context) {
     if (stop.isLoading) {
       return CupertinoActivityIndicator(
-          color: Theme.of(context).primaryColor, radius: 10);
-    } else if (stop.predictions != null) {
-      return const Icon(Icons.keyboard_arrow_up);
+        color: Theme.of(context).primaryColor,
+        radius: 12,
+      );
     } else {
-      return const Icon(Icons.keyboard_arrow_down);
+      return AnimatedRotation(
+        turns: stop.predictions != null ? 0.5 : 0,
+        duration: const Duration(milliseconds: 300),
+        child: Icon(
+          Icons.keyboard_arrow_down,
+          color: Theme.of(context).primaryColor,
+        ),
+      );
     }
   }
 
-  Widget etaInfoWidget(context) {
-// 未选中或者无数据
+  Widget etaInfoWidget(BuildContext context) {
     if (stop.predictions == null) {
-      return Container();
+      return const SizedBox.shrink();
     }
-    Color primaryColor = Theme.of(context).primaryColor;
-    List<Widget> busWidget = stop.predictions!
-        .map((e) => SizedBox(
-              height: 45,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.baseline,
-                textBaseline: TextBaseline.alphabetic,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text(
-                    (e.waitinMins == null || e.waitinMins! <= 0)
-                        ? "0"
-                        : e.waitinMins.toString(),
-                    style: Theme.of(context)
-                        .textTheme
-                        .headlineLarge
-                        ?.copyWith(color: Theme.of(context).primaryColor),
+
+    final busWidgets = stop.predictions!.map((e) {
+      final minutes =
+          (e.minutes == null || e.minutes! <= 0) ? "0" : e.minutes.toString();
+      return Container(
+        margin: const EdgeInsets.only(bottom: 8),
+        child: Row(
+          children: [
+            Text(
+              minutes,
+              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    color: Theme.of(context).primaryColor,
+                    fontWeight: FontWeight.bold,
                   ),
-                  Text(" min", style: Theme.of(context).textTheme.titleSmall)
-                ],
-              ),
-            ))
-        .toList();
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-      child: SizedBox(
-        height: max(50, busWidget.length * 45),
+            ),
+            const SizedBox(width: 4),
+            Text(
+              "min",
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: Colors.grey[600],
+                  ),
+            ),
+          ],
+        ),
+      );
+    }).toList();
+
+    return AnimatedSize(
+      duration: const Duration(milliseconds: 300),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            busWidget.isEmpty
-                ? Expanded(
-                    child: Text(
-                        'No service is scheduled for this stop at this time',
-                        style: Theme.of(context).textTheme.titleSmall),
-                  )
-                : Expanded(
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: busWidget),
+            Expanded(
+              child: busWidgets.isEmpty
+                  ? Text(
+                      'No service is scheduled for this stop at this time',
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                            color: Colors.grey[600],
+                            fontStyle: FontStyle.italic,
+                          ),
+                    )
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: busWidgets,
+                    ),
+            ),
+            Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(20),
+                onTap: addFavorite,
+                child: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    child: Icon(
+                      stop.isFavorite ? Icons.favorite : Icons.favorite_border,
+                      key: ValueKey(stop.isFavorite),
+                      color: Theme.of(context).primaryColor,
+                      size: 28,
+                    ),
                   ),
-            GestureDetector(
-              onTap: () async {
-                addFavorite();
-              },
-              behavior: HitTestBehavior.translucent, // 让点击区域包括空白部分
-              child: Padding(
-                  padding: const EdgeInsets.all(10.0), // 可根据需要调整内边距
-                  child: Icon(
-                    (stop.isFavorite
-                        ? Icons.favorite
-                        : Icons.favorite_border_outlined),
-                    color: primaryColor,
-                  )),
-            )
+                ),
+              ),
+            ),
           ],
         ),
       ),

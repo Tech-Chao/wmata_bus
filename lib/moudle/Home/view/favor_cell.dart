@@ -1,6 +1,4 @@
-import 'package:wmata_bus/Model/bus_route_detail.dart';
 import 'package:wmata_bus/Model/bus_stop.dart';
-import 'package:wmata_bus/Utils/utils.dart';
 import 'package:flutter/material.dart';
 
 class FavorCell extends StatelessWidget {
@@ -26,7 +24,7 @@ class FavorCell extends StatelessWidget {
               textBaseline: TextBaseline.alphabetic,
               children: [
                 Expanded(
-                  child: Text(stop.stopName ?? "",
+                  child: Text(stop.name ?? "",
                       style: Theme.of(context).textTheme.titleMedium),
                 ),
                 // Text(stop.stpid != null ? " (${stop.stpid})" : "",
@@ -37,9 +35,8 @@ class FavorCell extends StatelessWidget {
             ),
             Row(children: [
               Icon(Icons.directions_bus_rounded,
-                  color:
-                      Utils.hexToColor(stop.belongToRoute?.routeColor ?? "")),
-              Text(stop.belongToRoute?.routeId ?? "",
+                  color: Theme.of(context).primaryColor),
+              Text(stop.routeID ?? "",
                   style: Theme.of(context)
                       .textTheme
                       .titleMedium

@@ -14,7 +14,7 @@ class FavoriteProvder with ChangeNotifier, DiagnosticableTreeMixin {
   // 新增收藏
   addFavorite(BusStop model) {
     _favorites.insert(0, model);
-    FavoriteStorer.addFavoriteStops(model);
+    FavoriteStorer.addFavoriteBusStops(model);
     notifyListeners();
   }
 
@@ -23,12 +23,12 @@ class FavoriteProvder with ChangeNotifier, DiagnosticableTreeMixin {
     // 当前数据源修改
     for (var i = 0; i < _favorites.length; i++) {
       BusStop innerFavorite = _favorites[i];
-      if (innerFavorite.stopId == model.stopId) {
+      if (innerFavorite.stopID == model.stopID) {
         _favorites.removeAt(i);
         break;
       }
     }
-    FavoriteStorer.removeFavoriteStop(model);
+    FavoriteStorer.removeFavoriteBusStop(model);
     notifyListeners();
   }
 

@@ -2,10 +2,11 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:wmata_bus/Model/bus_route.dart';
+import 'package:wmata_bus/Model/bus_route_new.dart';
 import 'package:wmata_bus/Providers/route_provider.dart';
 import 'package:wmata_bus/Utils/const_tool.dart';
 import 'package:wmata_bus/Utils/store_manager.dart';
-import 'package:wmata_bus/moudle/Services/api_services.dart';
+import 'package:wmata_bus/moudle/Services/api_services_new.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -89,7 +90,7 @@ class _MinePageViewState extends State<MinePageView> {
       setState(() {
         loading = true;
       });
-      List<BusRoute>? temp = await APIService.updateRouteInfo();
+      List<BusRouteNew>? temp = await APIService.getBusroute();
       setState(() {
         loading = false;
       });

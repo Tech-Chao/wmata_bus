@@ -1,71 +1,54 @@
 import 'package:wmata_bus/Model/bus_prediction.dart';
-import 'package:wmata_bus/Model/bus_route.dart';
+import 'package:wmata_bus/Model/bus_prediction_new.dart';
+import 'package:wmata_bus/Model/bus_route_new.dart';
 
 class BusStop {
-  int? stopSequence;
-  String? stopId;
-  String? stopCode;
-  String? stopName;
-  String? agencyId;
-  String? stopLat;
-  String? stopLon;
-  String? parentStation;
+  double? lat;
+  double? lon;
+  String? name;
+  List<String>? routes;
+  String? stopID;
 
   // 自己增加
+  bool? direction;
+  String? routeID;
+  // 不保存
   bool isLoading = false;
   bool isFavorite = false;
   bool isSelected = false;
-  bool? direction;
-  BusRoute? belongToRoute;
-  List<BusPrediction>? predictions;
+  List<BusPredictionNew>? predictions;
 
-  BusStop(
-      {this.stopSequence,
-      this.stopId,
-      this.stopCode,
-      this.stopName,
-      this.agencyId,
-      this.stopLat,
-      this.stopLon,
-      this.parentStation});
+  BusStop({this.lat, this.lon, this.name, this.routes, this.stopID});
 
   BusStop.fromJson(Map<String, dynamic> json) {
-    stopSequence = json['stop_sequence'];
-    stopId = json['stop_id'];
-    stopCode = json['stop_code'];
-    stopName = json['stop_name'];
-    agencyId = json['agency_id'];
-    stopLat = json['stop_lat'];
-    stopLon = json['stop_lon'];
-    parentStation = json['parent_station'];
+    lat = json['Lat'];
+    lon = json['Lon'];
+    name = json['Name'];
+    routes = json['Routes'].cast<String>();
+    stopID = json['StopID'];
 
     //自己增加
     direction = json['direction'];
-    if (json['belongTo'] != null) {
-      belongToRoute = BusRoute.fromJson(json['belongTo']);
-    }
+    routeID = json['routeID'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['stop_sequence'] = stopSequence;
-    data['stop_id'] = stopId;
-    data['stop_code'] = stopCode;
-    data['stop_name'] = stopName;
-    data['agency_id'] = agencyId;
-    data['stop_lat'] = stopLat;
-    data['stop_lon'] = stopLon;
-    data['parent_station'] = parentStation;
+    data['Lat'] = lat;
+    data['Lon'] = lon;
+    data['Name'] = name;
+    data['Routes'] = routes;
+    data['StopID'] = stopID;
 
     data['direction'] = direction;
-    data['belongTo'] = belongToRoute?.toJson();
+    data['routeID'] = routeID;
 
     return data;
   }
 
   @override
   bool operator ==(Object other) =>
-      other is BusStop && stopId == other.stopId && stopName == other.stopName;
+      other is BusStop && stopID == other.stopID && name == other.name;
   @override
-  int get hashCode => Object.hash(stopId, stopName);
+  int get hashCode => Object.hash(stopID, name);
 }

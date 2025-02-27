@@ -1,4 +1,4 @@
-import 'package:wmata_bus/Model/bus_route.dart';
+import 'package:wmata_bus/Model/bus_route_new.dart';
 import 'package:wmata_bus/Providers/route_provider.dart';
 import 'package:wmata_bus/moudle/Route/View/route_cell.dart';
 import 'package:flutter/material.dart';
@@ -15,8 +15,8 @@ class RouteListPage extends StatefulWidget {
 class _RouteListPageState extends State<RouteListPage> {
   final TextEditingController _controller = TextEditingController();
 
-  List<BusRoute> originRoutes = [];
-  List<BusRoute> filterRoutes = [];
+  List<BusRouteNew> originRoutes = [];
+  List<BusRouteNew> filterRoutes = [];
 
   @override
   void initState() {
@@ -35,14 +35,14 @@ class _RouteListPageState extends State<RouteListPage> {
       ),
       body: Consumer<AppRouteProvider>(
         builder: (context, appRouteProvider, child) {
-          List<BusRoute>? routes = appRouteProvider.busRoutes;
+          List<BusRouteNew>? routes = appRouteProvider.busRoutes;
 
           filterRoutes = routes!
               .where((e) =>
-                  e.routeId!
+                  e.routeID!
                       .toLowerCase()
                       .contains(_controller.text.toLowerCase().trim()) ||
-                  e.routeShortName!
+                  e.name!
                       .toLowerCase()
                       .contains(_controller.text.toLowerCase().trim()))
               .toList();
@@ -54,22 +54,17 @@ class _RouteListPageState extends State<RouteListPage> {
               : ListView.builder(
                   itemCount: filterRoutes.length,
                   itemBuilder: (BuildContext context, int index) {
-                    BusRoute route = filterRoutes[index];
+                    BusRouteNew route = filterRoutes[index];
                     return GestureDetector(
-                      onTap: () {
-                        // 跳转详情页
-                        Navigator.of(context)
-                            .push(MaterialPageRoute(builder: (context) {
-                          return RouteStopPage(route: route);
-                        }));
-                      },
-                      child: RouteCell(
-                          titile: route.routeId!,
-                          subtitle: route.routeLongName != null
-                              ? route.routeLongName!
-                              : route.routeShortName!,
-                          routeColor: route.routeColor)
-                    );
+                        onTap: () {
+                          // 跳转详情页
+                          Navigator.of(context)
+                              .push(MaterialPageRoute(builder: (context) {
+                            return RouteStopPage(routeID: route.routeID ?? "");
+                          }));
+                        },
+                        child: RouteCell(
+                            title: route.routeID!, subtitle: route.name!));
                   },
                 );
         },

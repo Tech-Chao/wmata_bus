@@ -2,38 +2,35 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:wmata_bus/Model/bus_incident.dart';
-import 'package:wmata_bus/Model/bus_prediction.dart';
-import 'package:wmata_bus/Model/bus_route.dart';
-import 'package:wmata_bus/Model/bus_route_detail.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:wmata_bus/Model/bus_stop.dart';
+import 'package:wmata_bus/Model/bus_prediction_new.dart';
 import 'package:wmata_bus/Providers/favorite_provider.dart';
 import 'package:wmata_bus/Utils/const_tool.dart';
 import 'package:wmata_bus/Utils/store_manager.dart';
-import 'package:wmata_bus/moudle/Services/api_services.dart';
 import 'package:provider/provider.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:wmata_bus/moudle/Services/api_services_new.dart';
 import 'package:wmata_bus/moudle/Stop/View/route_stop_cell.dart';
+import 'package:wmata_bus/Model/bus_route_detail_new.dart';
+import 'package:wmata_bus/Model/bus_stop.dart';
 
 class RouteStopPage extends StatefulWidget {
-  final BusRoute route;
+  final String routeID;
   final BusStop? stop;
-  const RouteStopPage({super.key, this.stop, required this.route});
+  const RouteStopPage({super.key, this.stop, required this.routeID});
 
   @override
   State<RouteStopPage> createState() => _RouteStopPageState();
 }
 
 class _RouteStopPageState extends State<RouteStopPage> {
-  late BusRoute deepCopyRote;
   // 请求ing
   bool isLoading = false;
-  BusRouteDetail? routeDetail;
-  // 方向
-  Direction? directionModel;
+  // 路线详情
+  BusRouteDetailNew? routeDetail;
   // 方向
   bool direction = true;
   // 选中站点
@@ -81,7 +78,7 @@ class _RouteStopPageState extends State<RouteStopPage> {
         }
         if (mounted &&
             !isLoading &&
-            selectedStop?.stopId != null &&
+            selectedStop?.stopID != null &&
             remindSeconds.value == 0) {
           fetchPredictions(stop: selectedStop!);
         }
@@ -113,25 +110,20 @@ class _RouteStopPageState extends State<RouteStopPage> {
     setState(() {
       isLoading = true;
     });
-    Map<String, dynamic>? res =
-        await APIService.getRouteDetail(routeId: routeId);
+    BusRouteDetailNew? res = await APIService.getRouteDetail(routeId: routeId);
 
     setState(() {
       isLoading = false;
       if (res != null) {
-        routeDetail = BusRouteDetail.fromJson(res);
-
-        directionModel = direction
-            ? routeDetail?.directions?.last
-            : routeDetail?.directions?.first;
+        routeDetail = res;
       }
     });
     if (widget.stop != null) {
-      selectedStop = directionModel?.stops?[(widget.stop!.stopSequence! - 1)];
-      selectedStop?.isSelected = true;
-      Future.delayed(const Duration(milliseconds: 30), () {
-        itemScrollController.jumpTo(index: (selectedStop!.stopSequence! - 1));
-      });
+      //   selectedStop = directionModel?.stops?[(widget.stop!.stopSequence! - 1)];
+      // selectedStop?.isSelected = true;
+      // Future.delayed(const Duration(milliseconds: 30), () {
+      //     itemScrollController.jumpTo(index: (selectedStop!.stopSequence! - 1));
+      // });
       fetchPredictions(stop: selectedStop!);
     }
   }
@@ -141,16 +133,13 @@ class _RouteStopPageState extends State<RouteStopPage> {
     setState(() {
       stop.isLoading = true;
     });
-    List<BusPrediction>? predictions =
-        await APIService.getpredictions(stopCode: stop.stopCode!);
-    List<BusPrediction>? pfilterRedictions = predictions
-        ?.where((element) =>
-            element.headsign == directionModel?.tripHeadsign &&
-            element.routeId == widget.route.routeId)
+    List<BusPredictionNew>? predictions =
+        await APIService.getBusPredictions(stpid: stop.stopID!);
+    List<BusPredictionNew>? pfilterRedictions = predictions
+        ?.where((element) => element.routeID == widget.routeID)
         .toList();
     if (pfilterRedictions != null && pfilterRedictions.isNotEmpty) {
-      pfilterRedictions
-          .sort((p1, p2) => p1.waitinMins!.compareTo(p2.waitinMins!));
+      pfilterRedictions.sort((p1, p2) => p1.minutes!.compareTo(p2.minutes!));
     }
     if (mounted) {
       setState(() {
@@ -179,18 +168,12 @@ class _RouteStopPageState extends State<RouteStopPage> {
 
   @override
   void initState() {
-    // yourProvider = context.read<BusStopProvider>();
-
-    deepCopyRote = BusRoute.fromJson(widget.route.toJson());
-    if (widget.stop?.direction != null) {
-      direction = widget.stop!.direction!;
-    }
     // 路线详情
-    fetchRouteDetail(deepCopyRote.routeId!);
+    fetchRouteDetail(widget.routeID);
     // 自动刷新
     loadAutoRefresh();
     // 请求路线告警
-    fetchBusIncidents(deepCopyRote.routeId!);
+    fetchBusIncidents(widget.routeID);
     // Admob广告
     _loadAd();
     super.initState();
@@ -213,73 +196,96 @@ class _RouteStopPageState extends State<RouteStopPage> {
 
   @override
   Widget build(BuildContext context) {
-    String routeNavTitle = deepCopyRote.routeId ?? "";
-    String? descriptionTitle =
-        deepCopyRote.routeLongName ?? deepCopyRote.routeShortName;
-    String? destinationName = "to ${directionModel?.tripHeadsign}";
+    String routeNavTitle = widget.routeID;
+    String? descriptionTitle = routeDetail?.name ?? "";
+    Direction? directionModel =
+        direction ? routeDetail?.direction0 : routeDetail?.direction1;
+    String? destinationName = "${directionModel?.tripHeadsign}";
 
     List<BusStop> favorStops = context.watch<FavoriteProvder>().favorites;
     // // 遍历是否收藏
-    if (directionModel?.stops != null) {
-      for (var i = 0; i < directionModel!.stops!.length; i++) {
-        BusStop? tempStop = directionModel?.stops![i];
+    if (directionModel?.stops != null && directionModel!.stops!.isNotEmpty) {
+      for (var i = 0; i < directionModel.stops!.length; i++) {
+        BusStop? tempStop = directionModel.stops![i];
         if (favorStops.contains(tempStop)) {
-          tempStop?.isFavorite = true;
+          tempStop.isFavorite = true;
         } else {
-          tempStop?.isFavorite = false;
+          tempStop.isFavorite = false;
         }
       }
     }
+
+    String? directionId = routeDetail?.direction0?.directionText;
+    String? directionId1 = routeDetail?.direction1?.directionText;
+    List<String>? directionNames = [];
+    if (directionId != null) {
+      directionNames.add(directionId);
+    }
+    if (directionId1 != null) {
+      directionNames.add(directionId1);
+    }
+
+    Map<String, Widget>? segmentedWidgets = {
+      for (var e in directionNames)
+        e: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 40),
+            child: Text(
+              e,
+              style: TextStyle(
+                  color: directionModel?.directionText == e
+                      ? CupertinoColors.white
+                      : CupertinoColors.black),
+            ))
+    };
+
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(routeNavTitle,
-                style: Theme.of(context).textTheme.headlineMedium),
-            Text(descriptionTitle ?? "",
-                style: Theme.of(context).textTheme.headlineSmall),
-          ],
-        ),
-        actions: [
-          (routeDetail?.directions?.length == 1)
-              ? Container()
-              : IconButton(
-                  onPressed: () {
-                    setState(() {
-                      setState(() {
-                        _timer?.cancel();
-                        selectedStop?.isSelected = false;
-                        selectedStop?.predictions = null;
-                        selectedStop = null;
-                        setState(() {
-                          direction = !direction;
-
-                          directionModel = direction
-                              ? routeDetail?.directions?.last
-                              : routeDetail?.directions?.first;
-                        });
-                        deepCopyRote = BusRoute.fromJson(widget.route.toJson());
-                      });
-                    });
-                  },
-                  icon: const Icon(Icons.change_circle_outlined, size: 35))
+          title: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(routeNavTitle,
+              style: Theme.of(context).textTheme.headlineMedium),
+          Text(descriptionTitle,
+              style: Theme.of(context).textTheme.headlineSmall),
         ],
-      ),
+      )),
       // No scheduled service today for the 29G
       body: isLoading
           ? const Center(child: CupertinoActivityIndicator())
-          : directionModel == null || directionModel!.stops!.isEmpty
+          : directionModel == null ||
+                  directionModel.stops == null ||
+                  directionModel.stops!.isEmpty
               ? Center(
                   child: Text(
-                      "No scheduled service today for the ${routeDetail?.routeId}",
+                      "No scheduled service today for the ${routeDetail?.routeID}",
                       style: Theme.of(context).textTheme.titleMedium))
               : SafeArea(
                   child: Column(
                     children: [
                       _getAdWidget(),
-                      Text(destinationName!,
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: CupertinoSlidingSegmentedControl<String>(
+                          thumbColor: const Color(0xff333333),
+                          //子标
+                          children: segmentedWidgets,
+                          //当前选中的索引
+                          groupValue: directionModel?.directionText,
+                          //点击回调
+                          onValueChanged: (String? value) {
+                            setState(() {
+                              if (directionModel?.directionText != value) {
+                                direction = !direction;
+                                directionModel = direction
+                                    ? routeDetail?.direction1
+                                    : routeDetail?.direction0;
+                              }
+                            });
+                          },
+                        ),
+                      ),
+                      Text('TO $destinationName',
                           textAlign: TextAlign.center,
                           style: Theme.of(context).textTheme.titleMedium),
                       ValueListenableBuilder<int>(
@@ -302,7 +308,7 @@ class _RouteStopPageState extends State<RouteStopPage> {
                           itemCount: directionModel?.stops?.length ?? 0,
                           itemBuilder: (BuildContext context, int index) {
                             BusStop? stop = directionModel?.stops?[index];
-                            stop?.belongToRoute = deepCopyRote;
+                            stop?.routeID = widget.routeID;
 
                             return GestureDetector(
                               onTap: () {
@@ -318,6 +324,7 @@ class _RouteStopPageState extends State<RouteStopPage> {
                               },
                               child: RouteStopCell(
                                 stop: stop!,
+                                atIndex: "${index + 1}",
                                 addFavorite: () {
                                   if (stop.isFavorite) {
                                     // 移除
