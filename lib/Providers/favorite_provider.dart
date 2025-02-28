@@ -7,7 +7,7 @@ class FavoriteProvder with ChangeNotifier, DiagnosticableTreeMixin {
   List<BusStop> _busFavorites = [];
   List<BusStop> get busFavorites => _busFavorites;
 
-  List<RailStation> _railStationFavorites = [];
+  final List<RailStation> _railStationFavorites = [];
   List<RailStation> get railStationFavorites => _railStationFavorites;
 
 // 设置公交收藏
