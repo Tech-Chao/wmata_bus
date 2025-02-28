@@ -20,7 +20,7 @@ class RailRouteCell extends StatelessWidget {
                         ? Colors.orange
                         : railRoute.displayName?.toLowerCase() == 'silver'
                             ? Colors.grey
-                            : Colors.blue;
+                            : Theme.of(context).primaryColor;
 
     return Card(
       color: Colors.white,

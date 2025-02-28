@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:wmata_bus/Model/bus_route_new.dart';
 import 'package:wmata_bus/Model/bus_stop.dart';
 import 'package:wmata_bus/Model/rail_route.dart';
+import 'package:wmata_bus/Model/rail_station.dart';
 import 'package:wmata_bus/Providers/favorite_provider.dart';
 import 'package:wmata_bus/Providers/route_provider.dart';
 import 'package:wmata_bus/Utils/const_tool.dart';
@@ -27,6 +28,7 @@ void main() async {
   List<RailRoute>? railRoutes = await loadRailRoutesData();
 
   List<BusStop> favoriteStops = await FavoriteStorer.getFavoriteBusStops();
+  List<RailStation> favoriteStations = await FavoriteStorer.getFavoriteRailStations();
 
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(
@@ -34,11 +36,12 @@ void main() async {
           ..setBusRoutes(routes)
           ..setRailRoutes(railRoutes)),
     ChangeNotifierProvider(
-        create: (context) =>
-            FavoriteProvder()..setBusFavoriteStops(favoriteStops)),
+        create: (context) => FavoriteProvder()
+          ..setBusFavoriteStops(favoriteStops)
+          ..setRailStationFavorites(favoriteStations)),
     // ChangeNotifierProvider(
     //     create: (context) => BusStopProvider()..setBusStops(stops)),
-  ], child:const MyApp()));
+  ], child: const MyApp()));
 }
 
 const defaultTextThemeData = TextTheme(

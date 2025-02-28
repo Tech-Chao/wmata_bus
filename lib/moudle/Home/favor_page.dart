@@ -1,12 +1,14 @@
 import 'dart:io';
 import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:wmata_bus/Model/bus_stop.dart';
+import 'package:wmata_bus/Model/rail_station.dart';
 import 'package:wmata_bus/Providers/favorite_provider.dart';
 import 'package:wmata_bus/Utils/app_lifecycle_reactor.dart';
 import 'package:wmata_bus/Utils/app_open_ad_manager.dart';
 import 'package:wmata_bus/Utils/const_tool.dart';
 import 'package:wmata_bus/Utils/store_manager.dart';
-import 'package:wmata_bus/moudle/Home/view/favor_cell.dart';
+import 'package:wmata_bus/moudle/Home/view/bus_favor_cell.dart';
+import 'package:wmata_bus/moudle/Home/view/rail_favor_cell.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -14,6 +16,7 @@ import 'package:provider/provider.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wmata_bus/moudle/Stop/bus_stop_page.dart';
+import 'package:wmata_bus/moudle/Stop/rail_stop_page.dart';
 
 class FavoritePage extends StatefulWidget {
   final Function(int) onMyTap;
@@ -38,6 +41,7 @@ class _FavoritePageState extends State<FavoritePage> {
   @override
   void initState() {
     super.initState();
+
     WidgetsFlutterBinding.ensureInitialized()
         .addPostFrameCallback((_) => initPlugin());
     WidgetsBinding.instance
@@ -54,7 +58,7 @@ class _FavoritePageState extends State<FavoritePage> {
     int launchCount = prefs.getInt('launchCount') ?? 0;
     launchCount++;
     prefs.setInt('launchCount', launchCount);
-    if (launchCount == 3) {
+    if (launchCount == 4) {
       requestAppReview();
     }
   }
@@ -98,17 +102,6 @@ class _FavoritePageState extends State<FavoritePage> {
       _anchoredAdaptiveAd = null;
       _isLoaded = false;
     });
-
-    //  7天内五星好评去除广告
-    String? haveFiveStarDate = await StoreManager.get("haveFiveStar");
-    if (haveFiveStarDate != null && haveFiveStarDate != "0") {
-      var date = DateTime.parse(haveFiveStarDate);
-      var now = DateTime.now();
-      var difference = now.difference(date);
-      if (difference.inDays <= 7) {
-        return;
-      }
-    }
     final AnchoredAdaptiveBannerAdSize? size =
         await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
             MediaQuery.of(context).size.width.truncate());
@@ -201,22 +194,36 @@ class _FavoritePageState extends State<FavoritePage> {
     );
   }
 
-  Widget mainBodyWidget(List<BusStop> favorites) {
+  Widget mainBodyWidget(List<dynamic> favorites) {
     return ListView.builder(
       itemCount: favorites.length,
       itemBuilder: (BuildContext context, int index) {
         return GestureDetector(
             onTap: () {
               // 跳转详情页 child: RouteCell(route: null),
-              BusStop stop = favorites[index];
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                return BusStopPage(
-                  route: stop.route,
-                  stop: stop,
-                );
-              }));
+              if (favorites[index] is BusStop) {
+                BusStop stop = favorites[index];
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) {
+                  return BusStopPage(
+                    route: stop.route,
+                    stop: stop,
+                  );
+                }));
+              } else {
+                RailStation stop = favorites[index];
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) {
+                  return RailStopPage(
+                    route: stop.route!,
+                    stop: stop,
+                  );
+                }));
+              }
             },
-            child: FavorCell(stop: favorites[index]));
+            child: favorites[index] is BusStop
+                ? BusFavorCell(stop: favorites[index])
+                : RailFavorCell(stop: favorites[index]));
       },
     );
   }
@@ -226,6 +233,9 @@ class _FavoritePageState extends State<FavoritePage> {
   Widget build(BuildContext context) {
     return Consumer<FavoriteProvder>(
       builder: (context, favoriteProvder, child) {
+        List<dynamic> favorites = [];
+        favorites.addAll(favoriteProvder.busFavorites);
+        favorites.addAll(favoriteProvder.railStationFavorites);
         return Scaffold(
             backgroundColor: Colors.grey[100],
             appBar: AppBar(
@@ -240,10 +250,10 @@ class _FavoritePageState extends State<FavoritePage> {
             body: Column(
               children: [
                 _getAdWidget(),
-                favoriteProvder.busFavorites.isEmpty
+                favoriteProvder.busFavorites.isEmpty &&
+                        favoriteProvder.railStationFavorites.isEmpty
                     ? Expanded(child: emptyViewWidget())
-                    : Expanded(
-                        child: mainBodyWidget(favoriteProvder.busFavorites)),
+                    : Expanded(child: mainBodyWidget(favorites)),
               ],
             ));
       },

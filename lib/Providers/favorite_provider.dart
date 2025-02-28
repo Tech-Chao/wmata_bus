@@ -16,6 +16,11 @@ class FavoriteProvder with ChangeNotifier, DiagnosticableTreeMixin {
     notifyListeners();
   }
 
+  setRailStationFavorites(List<RailStation> localFavorites) {
+    _railStationFavorites.addAll(localFavorites);
+    notifyListeners();
+  }
+
   // 新增收藏
   addBusFavorite(BusStop model) {
     _busFavorites.insert(0, model);
@@ -44,7 +49,6 @@ class FavoriteProvder with ChangeNotifier, DiagnosticableTreeMixin {
     FavoriteStorer.removeFavoriteRailStation(station);
     notifyListeners();
   }
-
 
   // 移除某个收藏
   removeBusFavorite(BusStop model) {

@@ -43,10 +43,12 @@ class _RailStopPageState extends State<RailStopPage> {
 
   @override
   void initState() {
-    fetchRouteStations();
-    loadAutoRefresh();
-    _loadAd();
     super.initState();
+    _initializeData();
+  }
+
+  void _initializeData() async {
+    await Future.wait([fetchRouteStations(), loadAutoRefresh(), _loadAd()]);
   }
 
   @override
@@ -57,25 +59,30 @@ class _RailStopPageState extends State<RailStopPage> {
   }
 
   Future<void> loadAutoRefresh() async {
-    String? tempAutoRefresh = await StoreManager.get('autoRefresh');
+    final tempAutoRefresh = await StoreManager.get('autoRefresh');
+
     setState(() {
       autoRefresh =
           tempAutoRefresh == null ? false : bool.parse(tempAutoRefresh);
     });
 
     if (autoRefresh && selectedStop != null) {
-      _timer = Timer.periodic(const Duration(seconds: 1), (Timer timer) {
-        if (remindSeconds.value > 0) {
-          remindSeconds.value -= 1;
-        }
-        if (mounted &&
-            !isLoading &&
-            selectedStop?.code != null &&
-            remindSeconds.value == 0) {
-          fetchRailPredictions(stop: selectedStop!);
-        }
-      });
+      _startRefreshTimer();
     }
+  }
+
+  void _startRefreshTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (Timer timer) {
+      if (remindSeconds.value > 0) {
+        remindSeconds.value--;
+      }
+      if (mounted &&
+          !isLoading &&
+          selectedStop?.code != null &&
+          remindSeconds.value == 0) {
+        fetchRailPredictions(stop: selectedStop!);
+      }
+    });
   }
 
   Future<void> fetchRouteStations() async {
@@ -87,7 +94,8 @@ class _RailStopPageState extends State<RailStopPage> {
 
     try {
       List<RailStation>? res = await APIService.getRailStationByLineCode(
-          lineCode: widget.route.lineCode!);
+          lineCode: widget.route.lineCode ?? "");
+      res?.forEach((e) => e.route = widget.route);
 
       if (mounted) {
         setState(() {
@@ -96,9 +104,13 @@ class _RailStopPageState extends State<RailStopPage> {
         });
 
         if (widget.stop != null) {
-          selectedStop = widget.stop;
-          selectedStop?.isSelected = true;
-          fetchRailPredictions(stop: selectedStop!);
+          final atIndex = railStations?.indexOf(widget.stop!);
+          if (atIndex != null && atIndex >= 0) {
+            Future.delayed(const Duration(milliseconds: 30), () {
+              itemScrollController.jumpTo(index: atIndex);
+              setState(() => _handleStationTap(railStations![atIndex]));
+            });
+          }
         }
       }
     } catch (e) {
@@ -122,12 +134,12 @@ class _RailStopPageState extends State<RailStopPage> {
           await APIService.getRailPredictions(stationCodes: stop.code!);
 
       List<RailPrediction>? filteredPredictions = predictions
-          ?.where((element) => element.line == widget.route.lineCode)
+          ?.where((element) => element.line == widget.route?.lineCode)
           .toList();
 
-      if (filteredPredictions != null && filteredPredictions.isNotEmpty) {
-        filteredPredictions.sort((p1, p2) => p1.min!.compareTo(p2.min!));
-      }
+      // if (filteredPredictions != null && filteredPredictions.isNotEmpty) {
+      //   filteredPredictions.sort((p1, p2) => p1.min!.compareTo(p2.min!));
+      // }
 
       if (mounted) {
         setState(() {
@@ -182,82 +194,117 @@ class _RailStopPageState extends State<RailStopPage> {
 
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      appBar: AppBar(
-          title: Text(widget.route.displayName ?? "",
-              style: Theme.of(context).textTheme.headlineMedium)),
-      body: isLoading
-          ? const Center(child: CupertinoActivityIndicator())
-          : railStations == null || railStations!.isEmpty
-              ? Center(
-                  child: Text(
-                    "No stations found for line ${widget.route.displayName}",
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                )
-              : SafeArea(
-                  child: Column(
-                    children: [
-                      _getAdWidget(),
-                      ValueListenableBuilder<int>(
-                        valueListenable: remindSeconds,
-                        builder: (context, value, child) {
-                          String autoRefreshString = autoRefresh
-                              ? "Next refresh in $value seconds"
-                              : "Auto-refresh disabled";
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8),
-                            child: Text(
-                              autoRefreshString,
-                              style: Theme.of(context).textTheme.titleSmall,
-                            ),
-                          );
-                        },
-                      ),
-                      Expanded(
-                        child: ScrollablePositionedList.builder(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          itemScrollController: itemScrollController,
-                          itemPositionsListener: itemPositionsListener,
-                          itemCount: railStations?.length ?? 0,
-                          itemBuilder: (context, index) {
-                            final station = railStations![index];
-                            return GestureDetector(
-                              onTap: () {
-                                if (selectedStop?.isLoading ?? false) return;
-                                setState(() {
-                                  selectedStop?.isSelected = false;
-                                  selectedStop?.predictions = null;
-                                  station.isSelected = true;
-                                  selectedStop = station;
-                                });
-
-                                fetchRailPredictions(stop: station);
-                              },
-                              child: RailStopCell(
-                                isFavorite: favoriteStations.contains(station),
-                                stop: station,
-                                atIndex: "${index + 1}",
-                                addFavorite: () {
-                                  setState(() {
-                                    if (station.isSelected) {
-                                      provider
-                                          .removeRailStationFavorite(station);
-                                    } else {
-                                      station.route = widget.route;
-                                      provider.addRailStationFavorite(station);
-                                    }
-                                    station.isSelected = !station.isSelected;
-                                  });
-                                },
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+      appBar: _buildAppBar(context),
+      body: _buildBody(context, favoriteStations),
     );
+  }
+
+  PreferredSizeWidget _buildAppBar(BuildContext context) {
+    return AppBar(
+        title: Text(widget.route.displayName ?? "",
+            style: Theme.of(context).textTheme.headlineMedium));
+  }
+
+  Widget _buildBody(BuildContext context, List<RailStation> favoriteStations) {
+    if (isLoading) {
+      return const Center(child: CupertinoActivityIndicator());
+    }
+
+    if (railStations == null || railStations!.isEmpty) {
+      return Center(
+        child: Text(
+          "No stations found for line ${widget.route.displayName}",
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+      );
+    }
+
+    return SafeArea(
+      child: Column(
+        children: [
+          _getAdWidget(),
+          _buildRefreshStatus(context),
+          _buildStationsList(context, favoriteStations),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRefreshStatus(BuildContext context) {
+    return Column(
+      children: [
+        Text(
+          widget.route.internalDestination2 ?? "",
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
+        ValueListenableBuilder<int>(
+            valueListenable: remindSeconds,
+            builder: (context, value, child) {
+              final message = autoRefresh
+                  ? "Next refresh in $value seconds"
+                  : "Auto-refresh disabled";
+        
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Text(
+                  message,
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+              );
+            }),
+      ],
+    );
+  }
+
+  Widget _buildStationsList(
+      BuildContext context, List<RailStation> favoriteStations) {
+    return Expanded(
+      child: ScrollablePositionedList.builder(
+        physics: const AlwaysScrollableScrollPhysics(),
+        itemScrollController: itemScrollController,
+        itemPositionsListener: itemPositionsListener,
+        itemCount: railStations?.length ?? 0,
+        itemBuilder: (context, index) {
+          final station = railStations![index];
+          return GestureDetector(
+            onTap: () => _handleStationTap(station),
+            child: RailStopCell(
+              isFavorite: favoriteStations.contains(station),
+              stop: station,
+              atIndex: "${index + 1}",
+              addFavorite: () => _handleFavorite(context, station),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void _handleStationTap(RailStation station) {
+    if (selectedStop?.isLoading ?? false) return;
+
+    setState(() {
+      selectedStop?.isSelected = false;
+      selectedStop?.predictions = null;
+      station.isSelected = true;
+      selectedStop = station;
+    });
+
+    fetchRailPredictions(stop: station);
+  }
+
+  void _handleFavorite(BuildContext context, RailStation station) {
+    final provider = context.read<FavoriteProvder>();
+    bool isFavorite = provider.isFavoriteRailStation(station);
+
+    setState(() {
+      if (isFavorite) {
+        provider.removeRailStationFavorite(station);
+      } else {
+        station.route = widget.route;
+        provider.addRailStationFavorite(station);
+      }
+    });
   }
 
   Future<void> _loadAd() async {

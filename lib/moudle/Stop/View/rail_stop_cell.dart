@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:wmata_bus/Model/rail_predictino.dart';
 import 'package:wmata_bus/Model/rail_station.dart';
 
 class RailStopCell extends StatelessWidget {
@@ -103,25 +104,52 @@ class RailStopCell extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    final busWidgets = stop.predictions!.map((e) {
-      final minutes = e.min == null
-          ? "0 min"
-          : int.tryParse(e.min!) == null
-              ? e.min!
-              : int.parse(e.min!) <= 0
-                  ? "0 min"
-                  : "${e.min!} min";
-      return Container(
-        margin: const EdgeInsets.only(bottom: 10),
-        child: Text(
-          minutes,
-          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                color: Theme.of(context).primaryColor,
-                fontWeight: FontWeight.w800,
-              ),
+    final groupedPredictions = <String, List<RailPrediction>>{};
+    for (var prediction in stop.predictions!) {
+      if (prediction.destination != null) {
+        final destination = prediction.destination!;
+        groupedPredictions.putIfAbsent(destination, () => []);
+        groupedPredictions[destination]!.add(prediction);
+      }
+    }
+
+    final busWidgets = <String, List<Widget>>{};
+
+    groupedPredictions.forEach((key, value) {
+      busWidgets[key] = [];
+      busWidgets[key]!.add(
+        Container(
+          margin: const EdgeInsets.only(bottom: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+          decoration: BoxDecoration(
+            color: Theme.of(context).primaryColor.withOpacity(0.2),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Text(
+            'Destination: $key',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontStyle: FontStyle.italic,
+                ),
+          ),
         ),
       );
-    }).toList();
+      for (var e in value) {
+        final minutes = e.min == null
+            ? "0 min"
+            : int.tryParse(e.min!) == null
+                ? e.min!
+                : int.parse(e.min!) <= 0
+                    ? "0 min"
+                    : "${e.min!} min";
+        busWidgets[key]!.add(Container(
+          margin: const EdgeInsets.only(bottom: 10),
+          child: Text(minutes,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontStyle: FontStyle.italic,
+                  )),
+        ));
+      }
+    });
 
     return AnimatedSize(
       duration: const Duration(milliseconds: 300),
@@ -129,7 +157,7 @@ class RailStopCell extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Expanded(
               child: busWidgets.isEmpty
@@ -142,7 +170,9 @@ class RailStopCell extends StatelessWidget {
                     )
                   : Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: busWidgets,
+                      children: [
+                        ...busWidgets.values.expand((x) => x),
+                      ],
                     ),
             ),
             Material(

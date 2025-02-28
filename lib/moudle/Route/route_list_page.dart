@@ -29,6 +29,7 @@ class _RouteListPageState extends State<RouteListPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[100],
       appBar: AppBar(
         bottom: TabBar(
           indicatorColor: Colors.white,

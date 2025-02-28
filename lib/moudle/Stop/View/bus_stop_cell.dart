@@ -135,7 +135,7 @@ class RouteStopCell extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Expanded(
               child: busWidgets.isEmpty
