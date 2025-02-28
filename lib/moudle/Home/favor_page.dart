@@ -13,7 +13,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wmata_bus/moudle/Stop/route_stop_page.dart';
+import 'package:wmata_bus/moudle/Stop/bus_stop_page.dart';
 
 class FavoritePage extends StatefulWidget {
   final Function(int) onMyTap;
@@ -210,8 +210,8 @@ class _FavoritePageState extends State<FavoritePage> {
               // 跳转详情页 child: RouteCell(route: null),
               BusStop stop = favorites[index];
               Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                return RouteStopPage(
-                  routeID: stop.routeID ?? "",
+                return BusStopPage(
+                  route: stop.route,
                   stop: stop,
                 );
               }));
@@ -224,25 +224,30 @@ class _FavoritePageState extends State<FavoritePage> {
   // final List<BusFavoriteModel> favoriteStops;
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: Colors.grey[100],
-        appBar: AppBar(
-            title: Text(
-          "DC Bus Tracker",
-          style: Theme.of(context).textTheme.headlineLarge,
-        )),
-        floatingActionButton: floatingButton(context),
-        body: Consumer<FavoriteProvder>(
-            builder: (context, favoriteProvder, child) {
-          return Column(
-            children: [
-              _getAdWidget(),
-              favoriteProvder.favorites.isEmpty
-                  ? Expanded(child: emptyViewWidget())
-                  : Expanded(child: mainBodyWidget(favoriteProvder.favorites)),
-            ],
-          );
-        }));
+    return Consumer<FavoriteProvder>(
+      builder: (context, favoriteProvder, child) {
+        return Scaffold(
+            backgroundColor: Colors.grey[100],
+            appBar: AppBar(
+                title: Text(
+              "DC Bus Tracker",
+              style: Theme.of(context).textTheme.headlineLarge,
+            )),
+            floatingActionButton: favoriteProvder.busFavorites.isEmpty &&
+                    favoriteProvder.railStationFavorites.isEmpty
+                ? null
+                : floatingButton(context),
+            body: Column(
+              children: [
+                _getAdWidget(),
+                favoriteProvder.busFavorites.isEmpty
+                    ? Expanded(child: emptyViewWidget())
+                    : Expanded(
+                        child: mainBodyWidget(favoriteProvder.busFavorites)),
+              ],
+            ));
+      },
+    );
   }
 
   Widget floatingButton(BuildContext context) {

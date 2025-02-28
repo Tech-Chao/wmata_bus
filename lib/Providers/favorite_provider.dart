@@ -1,30 +1,58 @@
 import 'package:flutter/foundation.dart';
 import 'package:wmata_bus/Model/bus_stop.dart';
+import 'package:wmata_bus/Model/rail_station.dart';
 import 'package:wmata_bus/Utils/favorite_storer.dart';
 
 class FavoriteProvder with ChangeNotifier, DiagnosticableTreeMixin {
-  List<BusStop> _favorites = [];
-  List<BusStop> get favorites => _favorites;
+  List<BusStop> _busFavorites = [];
+  List<BusStop> get busFavorites => _busFavorites;
 
-  setFavoriteStops(List<BusStop> localFavorites) {
-    _favorites = localFavorites;
+  List<RailStation> _railStationFavorites = [];
+  List<RailStation> get railStationFavorites => _railStationFavorites;
+
+// 设置公交收藏
+  setBusFavoriteStops(List<BusStop> localFavorites) {
+    _busFavorites = localFavorites;
     notifyListeners();
   }
 
   // 新增收藏
-  addFavorite(BusStop model) {
-    _favorites.insert(0, model);
+  addBusFavorite(BusStop model) {
+    _busFavorites.insert(0, model);
     FavoriteStorer.addFavoriteBusStops(model);
     notifyListeners();
   }
 
+  // 是否收藏站点
+  bool isFavoriteBus(BusStop stop) {
+    return _busFavorites.contains(stop);
+  }
+
+  bool isFavoriteRailStation(RailStation station) {
+    return _railStationFavorites.contains(station);
+  }
+
+  // 新增收藏
+  addRailStationFavorite(RailStation station) {
+    _railStationFavorites.insert(0, station);
+    FavoriteStorer.addFavoriteRailStations(station);
+    notifyListeners();
+  }
+
+  removeRailStationFavorite(RailStation station) {
+    _railStationFavorites.remove(station);
+    FavoriteStorer.removeFavoriteRailStation(station);
+    notifyListeners();
+  }
+
+
   // 移除某个收藏
-  removeFavorite(BusStop model) {
+  removeBusFavorite(BusStop model) {
     // 当前数据源修改
-    for (var i = 0; i < _favorites.length; i++) {
-      BusStop innerFavorite = _favorites[i];
+    for (var i = 0; i < _busFavorites.length; i++) {
+      BusStop innerFavorite = _busFavorites[i];
       if (innerFavorite.stopID == model.stopID) {
-        _favorites.removeAt(i);
+        _busFavorites.removeAt(i);
         break;
       }
     }
@@ -33,7 +61,7 @@ class FavoriteProvder with ChangeNotifier, DiagnosticableTreeMixin {
   }
 
   clearFavorites() {
-    _favorites.clear();
+    _busFavorites.clear();
     FavoriteStorer.clear();
     notifyListeners();
   }

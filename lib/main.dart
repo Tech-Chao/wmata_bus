@@ -2,12 +2,11 @@ import 'dart:convert';
 
 import 'package:wmata_bus/Model/bus_route_new.dart';
 import 'package:wmata_bus/Model/bus_stop.dart';
-import 'package:wmata_bus/Model/rail_station.dart';
+import 'package:wmata_bus/Model/rail_route.dart';
 import 'package:wmata_bus/Providers/favorite_provider.dart';
 import 'package:wmata_bus/Providers/route_provider.dart';
 import 'package:wmata_bus/Utils/const_tool.dart';
 import 'package:wmata_bus/Utils/favorite_storer.dart';
-import 'package:wmata_bus/Utils/store_manager.dart';
 import 'package:wmata_bus/moudle/Tab/tab_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -24,22 +23,22 @@ void main() async {
   }
   // 异步加载本地公交数据JSON
   List<BusRouteNew>? routes = await loadRouteData();
-  List<RailStation>? stations = await loadRailStationsData();
 
-  // String? haveFiveStarDate = await StoreManager.get("haveFiveStar");
-  var res = await StoreManager.get("_isOldVersion");
+  List<RailRoute>? railRoutes = await loadRailRoutesData();
+
   List<BusStop> favoriteStops = await FavoriteStorer.getFavoriteBusStops();
+
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(
         create: (context) => AppRouteProvider()
           ..setBusRoutes(routes)
-          ..setRailStations(stations)),
+          ..setRailRoutes(railRoutes)),
     ChangeNotifierProvider(
         create: (context) =>
-            FavoriteProvder()..setFavoriteStops(favoriteStops)),
+            FavoriteProvder()..setBusFavoriteStops(favoriteStops)),
     // ChangeNotifierProvider(
     //     create: (context) => BusStopProvider()..setBusStops(stops)),
-  ], child: MyApp(isOlderVersion: res == true.toString())));
+  ], child:const MyApp()));
 }
 
 const defaultTextThemeData = TextTheme(
@@ -67,8 +66,7 @@ const olderTextThemeData = TextTheme(
 );
 
 class MyApp extends StatelessWidget {
-  final bool isOlderVersion;
-  const MyApp({super.key, required this.isOlderVersion});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -94,12 +92,11 @@ class MyApp extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
                     backgroundColor: const Color(0xff008457))),
-            textTheme:
-                isOlderVersion ? olderTextThemeData : defaultTextThemeData,
+            textTheme: defaultTextThemeData,
             floatingActionButtonTheme: const FloatingActionButtonThemeData(
                 foregroundColor: Colors.white,
                 backgroundColor: Color(0xff008457))),
-        home: MyTabPage(isOlderVersion: isOlderVersion));
+        home: const MyTabPage());
   }
 
   MaterialColor createMaterialColor(Color color) {
@@ -147,26 +144,26 @@ Future<List<BusRouteNew>?> loadRouteData() async {
   }
 }
 
-Future<List<RailStation>?> loadRailStationsData() async {
+Future<List<RailRoute>?> loadRailRoutesData() async {
   try {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? prefsData = prefs.getString(ConstTool.kAllRailStationskey);
+    String? prefsData = prefs.getString(ConstTool.kAllRailRouteskey);
     if (prefsData != null) {
       List<Map<String, dynamic>> jsonMaps =
           json.decode(prefsData).cast<Map<String, dynamic>>() ?? [];
-      List<RailStation>? stations =
-          jsonMaps.map((e) => RailStation.fromJson(e)).toList();
-      return stations;
+      List<RailRoute>? routes =
+          jsonMaps.map((e) => RailRoute.fromJson(e)).toList();
+      return routes;
     }
 
     // 如果不存在则从 assets 中加载
-    String jsonString = await rootBundle.loadString('assets/rail_station.json');
+    String jsonString = await rootBundle.loadString('assets/rail_routes.json');
     List<dynamic> routeMaps = json.decode(jsonString);
-    List<RailStation>? stations =
-        routeMaps.map((dynamic e) => RailStation.fromJson(e)).toList();
-    return stations;
+    List<RailRoute>? routes =
+        routeMaps.map((dynamic e) => RailRoute.fromJson(e)).toList();
+    return routes;
   } catch (error) {
-    debugPrint('Error loading local rail stations JSON: $error');
+    debugPrint('Error loading local rail routes JSON: $error');
     return [];
   }
 }

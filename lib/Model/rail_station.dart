@@ -1,3 +1,6 @@
+import 'package:wmata_bus/Model/rail_predictino.dart';
+import 'package:wmata_bus/Model/rail_route.dart';
+
 class RailStation {
   Address? address;
   String? code;
@@ -11,6 +14,12 @@ class RailStation {
   String? stationTogether1;
   String? stationTogether2;
 
+  // 自增
+  RailRoute? route;
+  bool isSelected = false;
+  bool isLoading = false;
+  List<RailPrediction>? predictions;
+
   RailStation(
       {this.address,
       this.code,
@@ -22,7 +31,8 @@ class RailStation {
       this.lon,
       this.name,
       this.stationTogether1,
-      this.stationTogether2});
+      this.stationTogether2,
+      this.route});
 
   RailStation.fromJson(Map<String, dynamic> json) {
     address =
@@ -37,6 +47,9 @@ class RailStation {
     name = json['Name'];
     stationTogether1 = json['StationTogether1'];
     stationTogether2 = json['StationTogether2'];
+    if (json['Route'] != null) {
+      route = RailRoute.fromJson(json['Route']);
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -54,8 +67,21 @@ class RailStation {
     data['Name'] = name;
     data['StationTogether1'] = stationTogether1;
     data['StationTogether2'] = stationTogether2;
+    if (route != null) {
+      data['Route'] = route!.toJson();
+    }
     return data;
   }
+
+  @override
+  bool operator ==(Object other) =>
+      other is RailStation &&
+      code == other.code &&
+      name == other.name &&
+      route?.lineCode == other.route?.lineCode;
+      
+  @override
+  int get hashCode => Object.hash(code, name, route?.lineCode);
 }
 
 class Address {

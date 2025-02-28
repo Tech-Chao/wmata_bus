@@ -94,6 +94,35 @@ class APIService {
     }
   }
 
+// http://api.wmata.com/Rail.svc/json/jStations[?LineCode]
+  static Future<List<RailStation>?> getRailStationByLineCode(
+      {required String lineCode}) async {
+    try {
+      var httpClient = HttpClient();
+      var uri = Uri.parse(
+          'http://api.wmata.com/Rail.svc/json/jStations?LineCode=$lineCode');
+      var request = await httpClient.getUrl(uri);
+      request.headers.add(apiKey, key);
+      var response = await request.close();
+
+      if (response.statusCode == HttpStatus.ok) {
+        var responseBody = await utf8.decodeStream(response);
+        Map<String, dynamic> data = json.decode(responseBody);
+        List<Map<String, dynamic>> stationMaps =
+            (data["Stations"] as List<dynamic>).cast<Map<String, dynamic>>();
+        List<RailStation> stations =
+            stationMaps.map((e) => RailStation.fromJson(e)).toList();
+        return stations;
+      } else {
+        debugPrint('HTTP request failed with status ${response.statusCode}');
+        return null;
+      }
+    } catch (error) {
+      debugPrint('Error getRailStationByLineCode: $error');
+      return null;
+    }
+  }
+
   // https://api.wmata.com/Incidents.svc/json/BusIncidents[?Route]
   static Future<List<BusIncident>?> getBusIncidents(
       {required String routeId}) async {

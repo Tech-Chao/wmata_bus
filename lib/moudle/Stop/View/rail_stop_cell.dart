@@ -1,14 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:wmata_bus/Model/bus_stop.dart';
+import 'package:wmata_bus/Model/rail_station.dart';
 
-class RouteStopCell extends StatelessWidget {
-  final BusStop stop;
+class RailStopCell extends StatelessWidget {
+  final RailStation stop;
   final String? atIndex;
   final bool isFavorite;
   final void Function() addFavorite;
 
-  const RouteStopCell({
+  const RailStopCell({
     super.key,
     required this.stop,
     this.atIndex,
@@ -104,27 +104,21 @@ class RouteStopCell extends StatelessWidget {
     }
 
     final busWidgets = stop.predictions!.map((e) {
-      final minutes =
-          (e.minutes == null || e.minutes! <= 0) ? "0" : e.minutes.toString();
+      final minutes = e.min == null
+          ? "0 min"
+          : int.tryParse(e.min!) == null
+              ? e.min!
+              : int.parse(e.min!) <= 0
+                  ? "0 min"
+                  : "${e.min!} min";
       return Container(
         margin: const EdgeInsets.only(bottom: 10),
-        child: Row(
-          children: [
-            Text(
-              minutes,
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    color: Theme.of(context).primaryColor,
-                    fontWeight: FontWeight.w800,
-                  ),
-            ),
-            const SizedBox(width: 6),
-            Text(
-              "min",
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: Colors.grey[700],
-                  ),
-            ),
-          ],
+        child: Text(
+          minutes,
+          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                color: Theme.of(context).primaryColor,
+                fontWeight: FontWeight.w800,
+              ),
         ),
       );
     }).toList();

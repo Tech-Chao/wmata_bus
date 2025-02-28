@@ -1,4 +1,5 @@
 import 'package:wmata_bus/Model/bus_prediction_new.dart';
+import 'package:wmata_bus/Model/bus_route_new.dart';
 
 class BusStop {
   double? lat;
@@ -9,10 +10,9 @@ class BusStop {
 
   // 自己增加
   bool? direction;
-  String? routeID;
+  BusRouteNew? route;
   // 不保存
   bool isLoading = false;
-  bool isFavorite = false;
   bool isSelected = false;
   List<BusPredictionNew>? predictions;
 
@@ -27,7 +27,9 @@ class BusStop {
 
     //自己增加
     direction = json['direction'];
-    routeID = json['routeID'];
+    if (json['route'] != null) {
+      route = BusRouteNew.fromJson(json['route']);
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -39,14 +41,17 @@ class BusStop {
     data['StopID'] = stopID;
 
     data['direction'] = direction;
-    data['routeID'] = routeID;
+    data['route'] = route;
 
     return data;
   }
 
   @override
   bool operator ==(Object other) =>
-      other is BusStop && stopID == other.stopID && name == other.name;
+      other is BusStop &&
+      stopID == other.stopID &&
+      name == other.name &&
+      route?.routeID == other.route?.routeID;
   @override
-  int get hashCode => Object.hash(stopID, name);
+  int get hashCode => Object.hash(stopID, name, route?.routeID);
 }

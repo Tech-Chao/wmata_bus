@@ -36,7 +36,7 @@ class FavorCell extends StatelessWidget {
             Row(children: [
               Icon(Icons.directions_bus_rounded,
                   color: Theme.of(context).primaryColor),
-              Text(stop.routeID ?? "",
+              Text(stop.route?.routeID ?? "",
                   style: Theme.of(context)
                       .textTheme
                       .titleMedium

@@ -1,27 +1,4 @@
 class RailPrediction {
-  List<Trains>? trains;
-
-  RailPrediction({this.trains});
-
-  RailPrediction.fromJson(Map<String, dynamic> json) {
-    if (json['Trains'] != null) {
-      trains = <Trains>[];
-      json['Trains'].forEach((v) {
-        trains!.add(Trains.fromJson(v));
-      });
-    }
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    if (trains != null) {
-      data['Trains'] = trains!.map((v) => v.toJson()).toList();
-    }
-    return data;
-  }
-}
-
-class Trains {
   String? car;
   String? destination;
   String? destinationCode;
@@ -32,7 +9,7 @@ class Trains {
   String? locationName;
   String? min;
 
-  Trains(
+  RailPrediction(
       {this.car,
       this.destination,
       this.destinationCode,
@@ -43,7 +20,7 @@ class Trains {
       this.locationName,
       this.min});
 
-  Trains.fromJson(Map<String, dynamic> json) {
+  RailPrediction.fromJson(Map<String, dynamic> json) {
     car = json['Car'];
     destination = json['Destination'];
     destinationCode = json['DestinationCode'];

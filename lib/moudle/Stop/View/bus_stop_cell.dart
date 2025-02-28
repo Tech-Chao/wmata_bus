@@ -61,8 +61,8 @@ class RouteStopCell extends StatelessWidget {
                               color: Theme.of(context).primaryColor,
                               fontWeight: FontWeight.w700)
                           : Theme.of(context).textTheme.titleMedium?.copyWith(
-                                color: Colors.black87,
-                              ),
+                              color: Colors.black87,
+                            ),
                     ),
                   ),
                 ),

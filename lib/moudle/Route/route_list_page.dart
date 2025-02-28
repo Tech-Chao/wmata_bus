@@ -1,73 +1,67 @@
-import 'package:wmata_bus/Model/bus_route_new.dart';
-import 'package:wmata_bus/Providers/route_provider.dart';
-import 'package:wmata_bus/moudle/Route/View/route_cell.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:wmata_bus/moudle/Stop/route_stop_page.dart';
+import 'package:wmata_bus/moudle/Route/bus_route_list.dart';
+import 'package:wmata_bus/moudle/Route/rail_route_list.dart';
 
 class RouteListPage extends StatefulWidget {
-  const RouteListPage({super.key});
+  const RouteListPage({Key? key}) : super(key: key);
 
   @override
   State<RouteListPage> createState() => _RouteListPageState();
 }
 
-class _RouteListPageState extends State<RouteListPage> {
-  final TextEditingController _controller = TextEditingController();
-
-  List<BusRouteNew> originRoutes = [];
-  List<BusRouteNew> filterRoutes = [];
+class _RouteListPageState extends State<RouteListPage>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+  final _controller = TextEditingController();
 
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
       appBar: AppBar(
-        elevation: 0,
-        leadingWidth: 20,
-        centerTitle: false,
+        bottom: TabBar(
+          indicatorColor: Colors.white,
+          controller: _tabController,
+          tabs: const [
+            Tab(
+              child: Text(
+                'Bus',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    fontSize: 16),
+              ),
+            ),
+            Tab(
+              child: Text(
+                'Rail',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    fontSize: 16),
+              ),
+            ),
+          ],
+        ),
         title: searchInputWidget(context),
       ),
-      body: Consumer<AppRouteProvider>(
-        builder: (context, appRouteProvider, child) {
-          List<BusRouteNew>? routes = appRouteProvider.busRoutes;
-
-          filterRoutes = routes!
-              .where((e) =>
-                  e.routeID!
-                      .toLowerCase()
-                      .contains(_controller.text.toLowerCase().trim()) ||
-                  e.name!
-                      .toLowerCase()
-                      .contains(_controller.text.toLowerCase().trim()))
-              .toList();
-
-          return filterRoutes.isEmpty
-              ? Center(
-                  child: Text("No data",
-                      style: Theme.of(context).textTheme.titleLarge))
-              : ListView.builder(
-                  itemCount: filterRoutes.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    BusRouteNew route = filterRoutes[index];
-                    return GestureDetector(
-                        onTap: () {
-                          // 跳转详情页
-                          Navigator.of(context)
-                              .push(MaterialPageRoute(builder: (context) {
-                            return RouteStopPage(routeID: route.routeID ?? "");
-                          }));
-                        },
-                        child: BusRouteCell(
-                            title: route.routeID!, subtitle: route.name!));
-                  },
-                );
-        },
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          BusRouteList(searchKeyword: _controller.text),
+          RailRouteList(searchKeyword: _controller.text),
+        ],
       ),
     );
   }
@@ -106,9 +100,9 @@ class _RouteListPageState extends State<RouteListPage> {
           disabledBorder: outlineInputBorder,
           focusedErrorBorder: outlineInputBorder,
           errorBorder: outlineInputBorder,
-          hintText: 'Please enter the Enter a bus route',
+          hintText: 'Please enter keywords to search',
           hintMaxLines: 1,
-          hintStyle: Theme.of(context).textTheme.titleMedium,
+          hintStyle: Theme.of(context).textTheme.titleSmall,
           suffixIcon: IconButton(
             onPressed: _controller.clear,
             icon: Icon(

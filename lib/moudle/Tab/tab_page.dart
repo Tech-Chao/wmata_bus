@@ -3,11 +3,8 @@ import 'package:wmata_bus/moudle/My/mine_page.dart';
 import 'package:wmata_bus/moudle/Route/route_list_page.dart';
 import 'package:flutter/material.dart';
 
-
 class MyTabPage extends StatefulWidget {
-  final bool isOlderVersion;
-
-  const MyTabPage({required this.isOlderVersion, Key? key}) : super(key: key);
+  const MyTabPage({Key? key}) : super(key: key);
 
   @override
   State<MyTabPage> createState() => _MyTabPageState();
@@ -46,8 +43,8 @@ class _MyTabPageState extends State<MyTabPage> {
         backgroundColor: Colors.white,
         selectedItemColor: Theme.of(context).primaryColor,
         items: bottomNavItems,
-        unselectedFontSize: widget.isOlderVersion ? 20 : 15,
-        selectedFontSize: widget.isOlderVersion ? 20 : 15,
+        unselectedFontSize: 15,
+        selectedFontSize: 18,
         selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500),
         currentIndex: currentIndex,
         // type: BottomNavigationBarType.shifting,

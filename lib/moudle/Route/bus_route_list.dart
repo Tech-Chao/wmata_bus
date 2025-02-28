@@ -1,13 +1,13 @@
 import 'package:wmata_bus/Model/bus_route_new.dart';
 import 'package:wmata_bus/Providers/route_provider.dart';
-import 'package:wmata_bus/moudle/Route/View/route_cell.dart';
-import 'package:wmata_bus/moudle/Stop/route_stop_page.dart';
+import 'package:wmata_bus/moudle/Route/View/bus_route_cell.dart';
+import 'package:wmata_bus/moudle/Stop/bus_stop_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class BusRouteList extends StatefulWidget {
-  final String searchKey;
-  const BusRouteList({super.key, required this.searchKey});
+  final String searchKeyword;
+  const BusRouteList({super.key, required this.searchKeyword});
 
   @override
   State<BusRouteList> createState() => _BusRouteListState();
@@ -25,7 +25,7 @@ class _BusRouteListState extends State<BusRouteList> {
             .where((e) =>
                 e.routeID
                     ?.toLowerCase()
-                    .contains(widget.searchKey.toLowerCase().trim()) ??
+                    .contains(widget.searchKeyword.toLowerCase().trim()) ??
                 false)
             .toList();
 
@@ -42,7 +42,7 @@ class _BusRouteListState extends State<BusRouteList> {
                         // 跳转详情页
                         Navigator.of(context)
                             .push(MaterialPageRoute(builder: (context) {
-                          return RouteStopPage(routeID: route.routeID ?? "");
+                          return BusStopPage(route: route);
                         }));
                       },
                       child: BusRouteCell(
