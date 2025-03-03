@@ -134,7 +134,7 @@ class _RailStopPageState extends State<RailStopPage> {
           await APIService.getRailPredictions(stationCodes: stop.code!);
 
       List<RailPrediction>? filteredPredictions = predictions
-          ?.where((element) => element.line == widget.route?.lineCode)
+          ?.where((element) => element.line == widget.route.lineCode)
           .toList();
 
       // if (filteredPredictions != null && filteredPredictions.isNotEmpty) {
@@ -233,10 +233,10 @@ class _RailStopPageState extends State<RailStopPage> {
   Widget _buildRefreshStatus(BuildContext context) {
     return Column(
       children: [
-        Text(
-          widget.route.internalDestination2 ?? "",
-          style: Theme.of(context).textTheme.titleSmall,
-        ),
+        // Text(
+        //   widget.route.internalDestination2 ?? "",
+        //   style: Theme.of(context).textTheme.titleSmall,
+        // ),
         ValueListenableBuilder<int>(
             valueListenable: remindSeconds,
             builder: (context, value, child) {

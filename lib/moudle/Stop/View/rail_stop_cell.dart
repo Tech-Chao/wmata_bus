@@ -143,10 +143,14 @@ class RailStopCell extends StatelessWidget {
                     : "${e.min!} min";
         busWidgets[key]!.add(Container(
           margin: const EdgeInsets.only(bottom: 10),
-          child: Text(minutes,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontStyle: FontStyle.italic,
-                  )),
+          child: Text(
+            minutes,
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  color: Theme.of(context).primaryColor,
+                  fontWeight: FontWeight.w800,
+                  fontStyle: FontStyle.italic,
+                ),
+          ),
         ));
       }
     });

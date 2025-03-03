@@ -66,6 +66,7 @@ class FavoriteProvder with ChangeNotifier, DiagnosticableTreeMixin {
 
   clearFavorites() {
     _busFavorites.clear();
+    _railStationFavorites.clear();
     FavoriteStorer.clear();
     notifyListeners();
   }

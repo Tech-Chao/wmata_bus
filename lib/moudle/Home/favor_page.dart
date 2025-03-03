@@ -6,7 +6,6 @@ import 'package:wmata_bus/Providers/favorite_provider.dart';
 import 'package:wmata_bus/Utils/app_lifecycle_reactor.dart';
 import 'package:wmata_bus/Utils/app_open_ad_manager.dart';
 import 'package:wmata_bus/Utils/const_tool.dart';
-import 'package:wmata_bus/Utils/store_manager.dart';
 import 'package:wmata_bus/moudle/Home/view/bus_favor_cell.dart';
 import 'package:wmata_bus/moudle/Home/view/rail_favor_cell.dart';
 import 'package:flutter/foundation.dart';

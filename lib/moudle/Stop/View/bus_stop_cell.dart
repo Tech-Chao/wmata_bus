@@ -61,8 +61,8 @@ class RouteStopCell extends StatelessWidget {
                               color: Theme.of(context).primaryColor,
                               fontWeight: FontWeight.w700)
                           : Theme.of(context).textTheme.titleMedium?.copyWith(
-                              color: Colors.black87,
-                            ),
+                                color: Colors.black87,
+                              ),
                     ),
                   ),
                 ),
@@ -108,22 +108,40 @@ class RouteStopCell extends StatelessWidget {
           (e.minutes == null || e.minutes! <= 0) ? "0" : e.minutes.toString();
       return Container(
         margin: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 12),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.baseline,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          textBaseline: TextBaseline.alphabetic,
           children: [
-            Text(
-              minutes,
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    color: Theme.of(context).primaryColor,
-                    fontWeight: FontWeight.w800,
-                  ),
+            Row(
+              children: [
+                Text(
+                  minutes,
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        color: Theme.of(context).primaryColor,
+                        fontWeight: FontWeight.w800,
+                        fontStyle: FontStyle.italic,
+                      ),
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  "min",
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: Colors.grey[700],
+                        fontStyle: FontStyle.italic,
+                      ),
+                ),
+              ],
             ),
-            const SizedBox(width: 6),
-            Text(
-              "min",
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: Colors.grey[700],
-                  ),
-            ),
+            if (e.vehicleID != null)
+              Text(
+                "vehicleID: #${e.vehicleID}",
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      color: Colors.grey[700],
+                      fontStyle: FontStyle.italic, 
+                    ),
+              ),
           ],
         ),
       );
