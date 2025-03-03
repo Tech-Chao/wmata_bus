@@ -1,12 +1,10 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:wmata_bus/Model/bus_incident.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:wmata_bus/Model/bus_prediction_new.dart';
 import 'package:wmata_bus/Model/bus_route_new.dart';
 import 'package:wmata_bus/Providers/favorite_provider.dart';
 import 'package:wmata_bus/Utils/const_tool.dart';
@@ -32,7 +30,7 @@ class _BusStopPageState extends State<BusStopPage> {
   // State variables
   bool isLoading = false;
   BusRouteDetailNew? routeDetail;
-  bool direction = true;
+  String? direction2;
   BusStop? selectedStop;
   Timer? _timer;
   String? alertMessage;
@@ -133,6 +131,7 @@ class _BusStopPageState extends State<BusStopPage> {
   void _updateRouteStops(BusRouteDetailNew res) {
     res.direction0?.stops?.forEach((e) => e.route = widget.route);
     res.direction1?.stops?.forEach((e) => e.route = widget.route);
+    direction2 = res.direction0?.directionText;
     if (mounted) {
       setState(() => routeDetail = res);
     }
@@ -142,10 +141,12 @@ class _BusStopPageState extends State<BusStopPage> {
     if (widget.stop == null) return;
 
     setState(() {
-      direction = widget.stop!.direction ?? true;
+      direction2 = widget.stop!.direction;
     });
 
-    final directionModel = direction ? res.direction0 : res.direction1;
+    final directionModel = direction2 == res.direction0?.directionText
+        ? res.direction0
+        : res.direction1;
     final atIndex = directionModel?.stops?.indexOf(widget.stop!);
 
     if (atIndex != null && atIndex >= 0) {
@@ -220,8 +221,9 @@ class _BusStopPageState extends State<BusStopPage> {
     final descriptionTitle =
         (widget.route?.name ?? "").split(' - ').sublist(1).join(' - ');
 
-    final directionModel =
-        direction ? routeDetail?.direction0 : routeDetail?.direction1;
+    final directionModel = direction2 == routeDetail?.direction0?.directionText
+        ? routeDetail?.direction0
+        : routeDetail?.direction1;
     final destinationName = directionModel?.tripHeadsign;
 
     final favorStops = context.watch<FavoriteProvder>().busFavorites;
@@ -258,8 +260,16 @@ class _BusStopPageState extends State<BusStopPage> {
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(title, style: Theme.of(context).textTheme.headlineMedium),
-          Text(subtitle, style: Theme.of(context).textTheme.headlineSmall),
+          Text(title,
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium
+                  ?.copyWith(color: Colors.white)),
+          Text(subtitle,
+              style: Theme.of(context)
+                  .textTheme
+                  .titleSmall
+                  ?.copyWith(color: Colors.white)),
         ],
       ),
       actions: const [SizedBox(width: 45)],
@@ -309,10 +319,11 @@ class _BusStopPageState extends State<BusStopPage> {
               onValueChanged: (String? value) {
                 if (directionModel?.directionText != value) {
                   setState(() {
-                    direction = !direction;
-                    directionModel = direction
-                        ? routeDetail?.direction1
-                        : routeDetail?.direction0;
+                    direction2 = value;
+                    directionModel =
+                        value == routeDetail?.direction0?.directionText
+                            ? routeDetail?.direction0
+                            : routeDetail?.direction1;
                   });
                 }
               },
@@ -326,7 +337,7 @@ class _BusStopPageState extends State<BusStopPage> {
       BuildContext context, String? destinationName) {
     return Text('TO $destinationName',
         textAlign: TextAlign.center,
-        style: Theme.of(context).textTheme.titleMedium);
+        style: Theme.of(context).textTheme.titleSmall);
   }
 
   Widget _buildRefreshStatus(BuildContext context) {
@@ -334,14 +345,14 @@ class _BusStopPageState extends State<BusStopPage> {
         valueListenable: remindSeconds,
         builder: (context, value, child) {
           final message = autoRefresh
-              ? "There are $value seconds left for the next refresh"
-              : "Automatic refresh is not enabled, please refresh manually";
+              ? "Next refresh in $value seconds"
+              : "Auto-refresh disabled, please refresh manually";
 
           return Padding(
             padding: const EdgeInsets.only(bottom: 8),
             child: Text(message,
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.titleSmall),
+                style: Theme.of(context).textTheme.bodySmall),
           );
         });
   }
@@ -377,7 +388,7 @@ class _BusStopPageState extends State<BusStopPage> {
     if (favorStops.contains(stop)) {
       context.read<FavoriteProvder>().removeBusFavorite(selectedStop!);
     } else {
-      selectedStop?.direction = direction;
+      selectedStop?.direction = direction2;
       context.read<FavoriteProvder>().addBusFavorite(selectedStop!);
     }
   }

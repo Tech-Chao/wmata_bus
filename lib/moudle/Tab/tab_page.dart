@@ -15,7 +15,7 @@ class _MyTabPageState extends State<MyTabPage> {
     const BottomNavigationBarItem(
       icon: Icon(Icons.favorite_border),
       activeIcon: Icon(Icons.favorite),
-      label: "Home",
+      label: "Saved",
     ),
     const BottomNavigationBarItem(
       icon: Icon(Icons.search_sharp),
@@ -44,7 +44,7 @@ class _MyTabPageState extends State<MyTabPage> {
         selectedItemColor: Theme.of(context).primaryColor,
         items: bottomNavItems,
         unselectedFontSize: 15,
-        selectedFontSize: 18,
+        selectedFontSize: 16,
         selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500),
         currentIndex: currentIndex,
         // type: BottomNavigationBarType.shifting,

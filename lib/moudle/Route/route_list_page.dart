@@ -77,15 +77,13 @@ class _RouteListPageState extends State<RouteListPage>
       borderSide: BorderSide(color: Color(0xFFF5F7FA)),
     );
     return Container(
-      height: 45,
-      // margin: EdgeInsets.only(15),
       decoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.all(Radius.circular(5))),
       child: TextField(
         controller: _controller,
         // autofocus: true,
-        style: Theme.of(context).textTheme.titleLarge,
+        style: Theme.of(context).textTheme.bodyMedium,
         textAlignVertical: TextAlignVertical.center,
         decoration: InputDecoration(
           prefixIcon: Icon(
@@ -102,13 +100,12 @@ class _RouteListPageState extends State<RouteListPage>
           focusedErrorBorder: outlineInputBorder,
           errorBorder: outlineInputBorder,
           hintText: 'Please enter keywords to search',
-          hintMaxLines: 1,
-          hintStyle: Theme.of(context).textTheme.titleSmall,
+          // hintMaxLines: 1,
+          hintStyle: Theme.of(context).textTheme.bodyMedium,
           suffixIcon: IconButton(
             onPressed: _controller.clear,
             icon: Icon(
               Icons.clear,
-              size: 30,
               color: Colors.grey[400],
             ),
           ),

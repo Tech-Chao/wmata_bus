@@ -44,7 +44,7 @@ class RailRouteCell extends StatelessWidget {
             ),
             const SizedBox(width: 10),
             Text(railRoute.displayName ?? '',
-                style: Theme.of(context).textTheme.titleMedium),
+                style: Theme.of(context).textTheme.titleSmall),
             const Spacer(),
             Icon(
               Icons.arrow_forward_ios_rounded,

@@ -57,10 +57,10 @@ class RouteStopCell extends StatelessWidget {
                       stop.name ?? "",
                       softWrap: true,
                       style: stop.isSelected
-                          ? Theme.of(context).textTheme.titleMedium?.copyWith(
+                          ? Theme.of(context).textTheme.titleSmall?.copyWith(
                               color: Theme.of(context).primaryColor,
                               fontWeight: FontWeight.w700)
-                          : Theme.of(context).textTheme.titleMedium?.copyWith(
+                          : Theme.of(context).textTheme.titleSmall?.copyWith(
                                 color: Colors.black87,
                               ),
                     ),
@@ -114,32 +114,20 @@ class RouteStopCell extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           textBaseline: TextBaseline.alphabetic,
           children: [
-            Row(
-              children: [
-                Text(
-                  minutes,
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        color: Theme.of(context).primaryColor,
-                        fontWeight: FontWeight.w800,
-                        fontStyle: FontStyle.italic,
-                      ),
-                ),
-                const SizedBox(width: 6),
-                Text(
-                  "min",
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: Colors.grey[700],
-                        fontStyle: FontStyle.italic,
-                      ),
-                ),
-              ],
+            Text(
+              "$minutes min",
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    color: Theme.of(context).primaryColor,
+                    fontWeight: FontWeight.w800,
+                    fontStyle: FontStyle.italic,
+                  ),
             ),
             if (e.vehicleID != null)
               Text(
                 "vehicleID: #${e.vehicleID}",
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
                       color: Colors.grey[700],
-                      fontStyle: FontStyle.italic, 
+                      fontStyle: FontStyle.italic,
                     ),
               ),
           ],

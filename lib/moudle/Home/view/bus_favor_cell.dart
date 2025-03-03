@@ -62,6 +62,12 @@ class BusFavorCell extends StatelessWidget {
                 ],
               ),
             ),
+            const SizedBox(height: 8),
+            Text(
+              "Direction: ${stop.direction ?? ""}",
+              // stop.direction ?? "",
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
           ],
         ),
       ),

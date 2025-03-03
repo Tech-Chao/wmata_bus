@@ -58,10 +58,10 @@ class RailStopCell extends StatelessWidget {
                       stop.name ?? "",
                       softWrap: true,
                       style: stop.isSelected
-                          ? Theme.of(context).textTheme.titleMedium?.copyWith(
+                          ? Theme.of(context).textTheme.titleSmall?.copyWith(
                               color: Theme.of(context).primaryColor,
                               fontWeight: FontWeight.w700)
-                          : Theme.of(context).textTheme.titleMedium?.copyWith(
+                          : Theme.of(context).textTheme.titleSmall?.copyWith(
                                 color: Colors.black87,
                               ),
                     ),
@@ -127,7 +127,7 @@ class RailStopCell extends StatelessWidget {
           ),
           child: Text(
             'Destination: $key',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
                   fontStyle: FontStyle.italic,
                 ),
           ),
@@ -145,7 +145,7 @@ class RailStopCell extends StatelessWidget {
           margin: const EdgeInsets.only(bottom: 10),
           child: Text(
             minutes,
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
                   color: Theme.of(context).primaryColor,
                   fontWeight: FontWeight.w800,
                   fontStyle: FontStyle.italic,
@@ -176,7 +176,7 @@ class RailStopCell extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         ...busWidgets.values.expand((x) => x),
-                      ],
+                      ],    
                     ),
             ),
             Material(

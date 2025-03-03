@@ -150,7 +150,7 @@ class _MinePageViewState extends State<MinePageView> {
           elevation: 0,
           title: Text(
             'DC Bus Tracker',
-            style: Theme.of(context).textTheme.headlineLarge,
+            style: Theme.of(context).textTheme.headlineMedium,
           ),
         ),
         body: ListView(

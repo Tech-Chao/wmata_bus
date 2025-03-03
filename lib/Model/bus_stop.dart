@@ -9,8 +9,9 @@ class BusStop {
   String? stopID;
 
   // 自己增加
-  bool? direction;
+  String? direction;
   BusRouteNew? route;
+
   // 不保存
   bool isLoading = false;
   bool isSelected = false;

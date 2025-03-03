@@ -101,6 +101,7 @@ class _FavoritePageState extends State<FavoritePage> {
       _anchoredAdaptiveAd = null;
       _isLoaded = false;
     });
+    
     final AnchoredAdaptiveBannerAdSize? size =
         await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
             MediaQuery.of(context).size.width.truncate());
@@ -186,7 +187,7 @@ class _FavoritePageState extends State<FavoritePage> {
                 // 切換Tab
                 widget.onMyTap(1);
               },
-              child: Text("Add BusStop",
+              child: Text("Add Stop",
                   style: Theme.of(context).textTheme.headlineSmall))
         ],
       ),
@@ -240,7 +241,7 @@ class _FavoritePageState extends State<FavoritePage> {
             appBar: AppBar(
                 title: Text(
               "DC Bus Tracker",
-              style: Theme.of(context).textTheme.headlineLarge,
+              style: Theme.of(context).textTheme.headlineMedium,
             )),
             floatingActionButton: favoriteProvder.busFavorites.isEmpty &&
                     favoriteProvder.railStationFavorites.isEmpty

@@ -242,7 +242,7 @@ class _RailStopPageState extends State<RailStopPage> {
             builder: (context, value, child) {
               final message = autoRefresh
                   ? "Next refresh in $value seconds"
-                  : "Auto-refresh disabled";
+                  : "Auto-refresh disabled, Please refresh manually";
         
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),

@@ -37,8 +37,8 @@ class BusRouteCell extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: Theme.of(context).textTheme.titleMedium),
-                  Text(fixedSubtitle, style: Theme.of(context).textTheme.titleSmall),
+                  Text(title, style: Theme.of(context).textTheme.titleSmall),
+                  Text(fixedSubtitle, style: Theme.of(context).textTheme.bodySmall),
                 ],
               ),
             ),
