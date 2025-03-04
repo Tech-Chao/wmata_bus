@@ -241,7 +241,7 @@ class _FavoritePageState extends State<FavoritePage> {
             appBar: AppBar(
                 title: Text(
               "DC Bus Tracker",
-              style: Theme.of(context).textTheme.headlineMedium,
+              style: Theme.of(context).textTheme.headlineSmall,
             )),
             floatingActionButton: favoriteProvder.busFavorites.isEmpty &&
                     favoriteProvder.railStationFavorites.isEmpty

@@ -10,7 +10,11 @@ class AppRouteProvider extends ChangeNotifier {
   List<RailRoute>? get railRoutes => _railRoutes;
 
   void setBusRoutes(List<BusRouteNew>? data) {
-    _busRoutes = data;
+    _busRoutes = data
+        ?.where((e) =>
+            e.routeID != null &&
+            !(e.routeID!.contains("*") || e.routeID!.contains("/")))
+        .toList();
     notifyListeners();
   }
 

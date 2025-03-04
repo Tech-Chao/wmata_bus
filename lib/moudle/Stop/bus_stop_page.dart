@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:wmata_bus/Model/bus_incident.dart';
 import 'package:wmata_bus/Model/bus_route_new.dart';
 import 'package:wmata_bus/Providers/favorite_provider.dart';
 import 'package:wmata_bus/Utils/const_tool.dart';
@@ -15,6 +16,7 @@ import 'package:wmata_bus/moudle/Services/api_services_new.dart';
 import 'package:wmata_bus/moudle/Stop/View/bus_stop_cell.dart';
 import 'package:wmata_bus/Model/bus_route_detail_new.dart';
 import 'package:wmata_bus/Model/bus_stop.dart';
+import 'package:wmata_bus/moudle/Stop/incident_page.dart';
 
 class BusStopPage extends StatefulWidget {
   final BusRouteNew? route;
@@ -33,7 +35,7 @@ class _BusStopPageState extends State<BusStopPage> {
   String? direction2;
   BusStop? selectedStop;
   Timer? _timer;
-  String? alertMessage;
+  List<BusIncident>? incidentList;
   bool autoRefresh = false;
   final ValueNotifier<int> remindSeconds = ValueNotifier<int>(60);
 
@@ -106,8 +108,7 @@ class _BusStopPageState extends State<BusStopPage> {
     final incidents = await APIService.getBusIncidents(routeId: routeId);
     if (incidents == null || !mounted) return;
 
-    final alertText = incidents.map((e) => e.description ?? "").join("\n");
-    setState(() => alertMessage = alertText);
+    setState(() => incidentList = incidents);
   }
 
   Future<void> fetchRouteDetail(String routeId) async {
@@ -394,37 +395,20 @@ class _BusStopPageState extends State<BusStopPage> {
   }
 
   Widget? _buildFloatingActionButton(BuildContext context) {
-    if (alertMessage == null || alertMessage!.replaceAll("\n", "").isEmpty) {
+    if (incidentList == null || incidentList!.isEmpty) {
       return null;
     }
 
     return FloatingActionButton(
-        onPressed: () => _showAlertDialog(context),
+        onPressed: () => _showIncidentPageView(context),
         child: const Icon(Icons.warning));
   }
 
-  void _showAlertDialog(BuildContext context) {
-    showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-              title: Text(
-                "Tip",
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              content: Text(alertMessage!),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context, 'CupertinoAlertDialog - Normal, OK');
-                  },
-                  child: Text("OK",
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleLarge
-                          ?.copyWith(color: Theme.of(context).primaryColor)),
-                )
-              ],
-            ));
+  void _showIncidentPageView(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => IncidentPage(incidentList: incidentList!),
+    );
   }
 
   Future<void> _loadAd() async {

@@ -139,11 +139,11 @@ class APIService {
         // Read response
         var responseBody = await utf8.decodeStream(response);
         Map<String, dynamic> data = json.decode(responseBody);
-        List<Map<String, dynamic>> predictionMaps =
+        List<Map<String, dynamic>> busIncidentMaps =
             (data["BusIncidents"] as List<dynamic>)
                 .cast<Map<String, dynamic>>();
         List<BusIncident>? incidents =
-            predictionMaps.map((e) => BusIncident.fromJson(e)).toList();
+            busIncidentMaps.map((e) => BusIncident.fromJson(e)).toList();
         return incidents;
       } else {
         debugPrint('HTTP request failed with status ${response.statusCode}');
@@ -155,7 +155,7 @@ class APIService {
     }
   }
 
-  static Future<List<RailStation>?> getRailStationIncidents() async {
+  static Future<List<BusIncident>?> getRailIncidents() async {
     try {
       var httpClient = HttpClient();
       var uri = Uri.parse('http://api.wmata.com/Incidents.svc/json/Incidents');
@@ -167,16 +167,16 @@ class APIService {
         var responseBody = await utf8.decodeStream(response);
         Map<String, dynamic> data = json.decode(responseBody);
         List<Map<String, dynamic>> stationMaps =
-            (data["Stations"] as List<dynamic>).cast<Map<String, dynamic>>();
-        List<RailStation> stations =
-            stationMaps.map((e) => RailStation.fromJson(e)).toList();
-        return stations;
+            (data["Incidents"] as List<dynamic>).cast<Map<String, dynamic>>();
+        List<BusIncident> incidents =
+            stationMaps.map((e) => BusIncident.fromJson(e)).toList();
+        return incidents;
       } else {
         debugPrint('HTTP request failed with status ${response.statusCode}');
         return null;
       }
     } catch (error) {
-      debugPrint('Error getRailStationInfo: $error');
+      debugPrint('Error getRailIncidents: $error');
       return null;
     }
   }

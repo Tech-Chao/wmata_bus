@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:wmata_bus/Model/bus_incident.dart';
 import 'package:wmata_bus/Model/rail_predictino.dart';
 import 'package:wmata_bus/Model/rail_route.dart';
 import 'package:wmata_bus/Model/rail_station.dart';
@@ -15,6 +16,7 @@ import 'package:provider/provider.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:wmata_bus/moudle/Services/api_services_new.dart';
 import 'package:wmata_bus/moudle/Stop/View/rail_stop_cell.dart';
+import 'package:wmata_bus/moudle/Stop/incident_page.dart';
 
 class RailStopPage extends StatefulWidget {
   final RailRoute route;
@@ -38,6 +40,8 @@ class _RailStopPageState extends State<RailStopPage> {
   final ItemPositionsListener itemPositionsListener =
       ItemPositionsListener.create();
 
+  List<BusIncident>? incidentList;
+
   BannerAd? _anchoredAdaptiveAd;
   bool _isLoaded = false;
 
@@ -48,7 +52,12 @@ class _RailStopPageState extends State<RailStopPage> {
   }
 
   void _initializeData() async {
-    await Future.wait([fetchRouteStations(), loadAutoRefresh(), _loadAd()]);
+    await Future.wait([
+      fetchRouteStations(),
+      loadAutoRefresh(),
+      _loadAd(),
+      fetchRailIncidents()
+    ]);
   }
 
   @override
@@ -83,6 +92,13 @@ class _RailStopPageState extends State<RailStopPage> {
         fetchRailPredictions(stop: selectedStop!);
       }
     });
+  }
+
+  Future<void> fetchRailIncidents() async {
+    final incidents = await APIService.getRailIncidents();
+    if (incidents == null || !mounted) return;
+
+    setState(() => incidentList = incidents);
   }
 
   Future<void> fetchRouteStations() async {
@@ -136,11 +152,6 @@ class _RailStopPageState extends State<RailStopPage> {
       List<RailPrediction>? filteredPredictions = predictions
           ?.where((element) => element.line == widget.route.lineCode)
           .toList();
-
-      // if (filteredPredictions != null && filteredPredictions.isNotEmpty) {
-      //   filteredPredictions.sort((p1, p2) => p1.min!.compareTo(p2.min!));
-      // }
-
       if (mounted) {
         setState(() {
           remindSeconds.value = 60;
@@ -196,6 +207,30 @@ class _RailStopPageState extends State<RailStopPage> {
       backgroundColor: Colors.grey[100],
       appBar: _buildAppBar(context),
       body: _buildBody(context, favoriteStations),
+      floatingActionButton: _buildFloatingActionButton(context),
+    );
+  }
+
+  Widget? _buildFloatingActionButton(BuildContext context) {
+    if (incidentList == null || incidentList!.isEmpty) {
+      return null;
+    }
+    final filteredIncidents = incidentList!.where((element) =>
+        element.linesAffected?.contains(widget.route.lineCode ?? "") ?? false);
+    if (filteredIncidents.isEmpty) {
+      return null;
+    }
+
+    incidentList = filteredIncidents.toList();
+    return FloatingActionButton(
+        onPressed: () => _showIncidentPageView(context),
+        child: const Icon(Icons.warning));
+  }
+
+  void _showIncidentPageView(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => IncidentPage(incidentList: incidentList!),
     );
   }
 
@@ -243,7 +278,7 @@ class _RailStopPageState extends State<RailStopPage> {
               final message = autoRefresh
                   ? "Next refresh in $value seconds"
                   : "Auto-refresh disabled, Please refresh manually";
-        
+
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 child: Text(

@@ -18,14 +18,14 @@ class _MyTabPageState extends State<MyTabPage> {
       label: "Saved",
     ),
     const BottomNavigationBarItem(
-      icon: Icon(Icons.search_sharp),
+      icon: Icon(Icons.search_rounded),
       activeIcon: Icon(Icons.search_rounded),
       label: "Search",
     ),
     const BottomNavigationBarItem(
-      icon: Icon(Icons.more_horiz_outlined),
-      activeIcon: Icon(Icons.more_horiz),
-      label: "More",
+      icon: Icon(Icons.settings),
+      activeIcon: Icon(Icons.settings),
+      label: "Setting",
     ),
   ];
 
@@ -44,8 +44,7 @@ class _MyTabPageState extends State<MyTabPage> {
         selectedItemColor: Theme.of(context).primaryColor,
         items: bottomNavItems,
         unselectedFontSize: 15,
-        selectedFontSize: 16,
-        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500),
+        selectedFontSize: 15,
         currentIndex: currentIndex,
         // type: BottomNavigationBarType.shifting,
         onTap: (index) => _changePage(index),
