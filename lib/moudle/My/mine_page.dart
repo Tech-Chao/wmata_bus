@@ -173,12 +173,8 @@ class _MinePageViewState extends State<MinePageView> {
       appBar: AppBar(
         elevation: 0,
         centerTitle: true,
-        title: Text(
-          'Setting',
-          style: Theme.of(context)
-              .textTheme
-              .headlineMedium
-        ),
+        title:
+            Text('Setting', style: Theme.of(context).textTheme.headlineMedium),
       ),
       body: ListView(
         children: [
@@ -191,3 +187,4 @@ class _MinePageViewState extends State<MinePageView> {
     );
   }
 }
+

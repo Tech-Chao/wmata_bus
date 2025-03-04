@@ -5,6 +5,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:in_app_review/in_app_review.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wmata_bus/Model/bus_incident.dart';
 import 'package:wmata_bus/Model/rail_predictino.dart';
 import 'package:wmata_bus/Model/rail_route.dart';
@@ -44,6 +46,9 @@ class _RailStopPageState extends State<RailStopPage> {
 
   BannerAd? _anchoredAdaptiveAd;
   bool _isLoaded = false;
+
+  // 应用内评分
+  final InAppReview inAppReview = InAppReview.instance;
 
   @override
   void initState() {
@@ -92,6 +97,22 @@ class _RailStopPageState extends State<RailStopPage> {
         fetchRailPredictions(stop: selectedStop!);
       }
     });
+  }
+
+  void checkAppLaunchCountAndReview() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    int launchCount = prefs.getInt('launchCount') ?? 0;
+    launchCount++;
+    prefs.setInt('launchCount', launchCount);
+    if (launchCount == 4) {
+      requestAppReview();
+    }
+  }
+
+  requestAppReview() async {
+    if (await inAppReview.isAvailable()) {
+      inAppReview.requestReview();
+    }
   }
 
   Future<void> fetchRailIncidents() async {
@@ -157,6 +178,10 @@ class _RailStopPageState extends State<RailStopPage> {
           remindSeconds.value = 60;
           stop.isLoading = false;
           stop.predictions = filteredPredictions;
+          // 如果预测列表不为空，则请求应用评分
+          if (filteredPredictions != null && filteredPredictions.isNotEmpty) {
+            checkAppLaunchCountAndReview();
+          }
         });
       }
 

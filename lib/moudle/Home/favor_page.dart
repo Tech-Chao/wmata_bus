@@ -1,19 +1,14 @@
-import 'dart:io';
 import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:wmata_bus/Model/bus_stop.dart';
 import 'package:wmata_bus/Model/rail_station.dart';
 import 'package:wmata_bus/Providers/favorite_provider.dart';
 import 'package:wmata_bus/Utils/app_lifecycle_reactor.dart';
 import 'package:wmata_bus/Utils/app_open_ad_manager.dart';
-import 'package:wmata_bus/Utils/const_tool.dart';
 import 'package:wmata_bus/moudle/Home/view/bus_favor_cell.dart';
 import 'package:wmata_bus/moudle/Home/view/rail_favor_cell.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
-import 'package:in_app_review/in_app_review.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wmata_bus/moudle/Stop/bus_stop_page.dart';
 import 'package:wmata_bus/moudle/Stop/rail_stop_page.dart';
 
@@ -28,8 +23,6 @@ class FavoritePage extends StatefulWidget {
 class _FavoritePageState extends State<FavoritePage> {
   // IDFA获取授权
   String authStatus = 'Unknown';
-  // 应用内评分
-  final InAppReview inAppReview = InAppReview.instance;
   // 横幅广告
   // BannerAd? _anchoredAdaptiveAd;
   // bool _isLoaded = false;
@@ -43,29 +36,11 @@ class _FavoritePageState extends State<FavoritePage> {
 
     WidgetsFlutterBinding.ensureInitialized()
         .addPostFrameCallback((_) => initPlugin());
-    WidgetsBinding.instance
-        .addPostFrameCallback((_) => checkAppLaunchCountAndReview());
 
     AppOpenAdManager appOpenAdManager = AppOpenAdManager()..loadAd();
     _appLifecycleReactor =
         AppLifecycleReactor(appOpenAdManager: appOpenAdManager);
     _appLifecycleReactor.listenToAppStateChanges();
-  }
-
-  void checkAppLaunchCountAndReview() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    int launchCount = prefs.getInt('launchCount') ?? 0;
-    launchCount++;
-    prefs.setInt('launchCount', launchCount);
-    if (launchCount == 4) {
-      requestAppReview();
-    }
-  }
-
-  requestAppReview() async {
-    if (await inAppReview.isAvailable()) {
-      inAppReview.requestReview();
-    }
   }
 
   Future<void> initPlugin() async {
@@ -101,7 +76,7 @@ class _FavoritePageState extends State<FavoritePage> {
   // //     _anchoredAdaptiveAd = null;
   // //     _isLoaded = false;
   // //   });
-    
+
   //   final AnchoredAdaptiveBannerAdSize? size =
   //       await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
   //           MediaQuery.of(context).size.width.truncate());

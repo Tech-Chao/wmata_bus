@@ -5,6 +5,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:in_app_review/in_app_review.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wmata_bus/Model/bus_incident.dart';
 import 'package:wmata_bus/Model/bus_route_new.dart';
 import 'package:wmata_bus/Providers/favorite_provider.dart';
@@ -38,6 +40,8 @@ class _BusStopPageState extends State<BusStopPage> {
   List<BusIncident>? incidentList;
   bool autoRefresh = false;
   final ValueNotifier<int> remindSeconds = ValueNotifier<int>(60);
+  // 应用内评分
+  final InAppReview inAppReview = InAppReview.instance;
 
   // Scroll controllers
   final ItemScrollController itemScrollController = ItemScrollController();
@@ -47,6 +51,7 @@ class _BusStopPageState extends State<BusStopPage> {
   // Ad related
   BannerAd? _anchoredAdaptiveAd;
   bool _isLoaded = false;
+
 
   @override
   void initState() {
@@ -68,6 +73,22 @@ class _BusStopPageState extends State<BusStopPage> {
     _timer?.cancel();
     _anchoredAdaptiveAd?.dispose();
     super.dispose();
+  }
+
+  void checkAppLaunchCountAndReview() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    int launchCount = prefs.getInt('launchCount') ?? 0;
+    launchCount++;
+    prefs.setInt('launchCount', launchCount);
+    if (launchCount == 5) {
+      requestAppReview();
+    }
+  }
+
+  requestAppReview() async {
+    if (await inAppReview.isAvailable()) {
+      inAppReview.requestReview();
+    }
   }
 
   Future<void> _loadRouteDetail() async {
@@ -176,6 +197,10 @@ class _BusStopPageState extends State<BusStopPage> {
           remindSeconds.value = 60;
           selectedStop?.isLoading = false;
           selectedStop?.predictions = filteredPredictions;
+          // 如果预测列表不为空，则请求应用评分
+          if (filteredPredictions != null && filteredPredictions.isNotEmpty) {
+            checkAppLaunchCountAndReview();
+          }
         });
       }
     } catch (e) {
