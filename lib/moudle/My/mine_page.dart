@@ -177,8 +177,7 @@ class _MinePageViewState extends State<MinePageView> {
           'Setting',
           style: Theme.of(context)
               .textTheme
-              .headlineSmall
-              ?.copyWith(fontWeight: FontWeight.bold),
+              .headlineMedium
         ),
       ),
       body: ListView(

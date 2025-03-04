@@ -31,9 +31,9 @@ class _FavoritePageState extends State<FavoritePage> {
   // 应用内评分
   final InAppReview inAppReview = InAppReview.instance;
   // 横幅广告
-  BannerAd? _anchoredAdaptiveAd;
-  bool _isLoaded = false;
-  late Orientation _currentOrientation;
+  // BannerAd? _anchoredAdaptiveAd;
+  // bool _isLoaded = false;
+  // late Orientation _currentOrientation;
   // 开屏广告
   late AppLifecycleReactor _appLifecycleReactor;
 
@@ -88,89 +88,89 @@ class _FavoritePageState extends State<FavoritePage> {
     }
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _currentOrientation = MediaQuery.of(context).orientation;
-    _loadAd();
-  }
+  // // @override
+  // // void didChangeDependencies() {
+  // //   super.didChangeDependencies();
+  // //   _currentOrientation = MediaQuery.of(context).orientation;
+  // //   _loadAd();
+  // // }
 
-  Future<void> _loadAd() async {
-    await _anchoredAdaptiveAd?.dispose();
-    setState(() {
-      _anchoredAdaptiveAd = null;
-      _isLoaded = false;
-    });
+  // // Future<void> _loadAd() async {
+  // //   await _anchoredAdaptiveAd?.dispose();
+  // //   setState(() {
+  // //     _anchoredAdaptiveAd = null;
+  // //     _isLoaded = false;
+  // //   });
     
-    final AnchoredAdaptiveBannerAdSize? size =
-        await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
-            MediaQuery.of(context).size.width.truncate());
+  //   final AnchoredAdaptiveBannerAdSize? size =
+  //       await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
+  //           MediaQuery.of(context).size.width.truncate());
 
-    if (size == null) {
-      if (kDebugMode) {
-        print('Unable to get height of anchored banner.');
-      }
-      return;
-    }
-    String adUnitId;
-    if (kDebugMode) {
-      adUnitId = Platform.isAndroid
-          ? ConstTool.kAndroidDebugBannerId
-          : ConstTool.kiOSDebugBannerId;
-    } else {
-      adUnitId = Platform.isAndroid
-          ? ConstTool.kAndroidReleaseBannerId
-          : ConstTool.kiOSReleaseBannerId;
-    }
-    _anchoredAdaptiveAd = BannerAd(
-      adUnitId: adUnitId,
-      size: size,
-      request: const AdRequest(),
-      listener: BannerAdListener(
-        onAdLoaded: (Ad ad) {
-          if (kDebugMode) {
-            print('$ad loaded: ${ad.responseInfo}');
-          }
-          setState(() {
-            // When the ad is loaded, get the ad size and use it to set
-            // the height of the ad container.
-            _anchoredAdaptiveAd = ad as BannerAd;
-            _isLoaded = true;
-          });
-        },
-        onAdFailedToLoad: (Ad ad, LoadAdError error) {
-          if (kDebugMode) {
-            print('Anchored adaptive banner failedToLoad: $error');
-          }
-          ad.dispose();
-        },
-      ),
-    );
-    return _anchoredAdaptiveAd!.load();
-  }
+  //   if (size == null) {
+  //     if (kDebugMode) {
+  //       print('Unable to get height of anchored banner.');
+  //     }
+  //     return;
+  //   }
+  //   String adUnitId;
+  //   if (kDebugMode) {
+  //     adUnitId = Platform.isAndroid
+  //         ? ConstTool.kAndroidDebugBannerId
+  //         : ConstTool.kiOSDebugBannerId;
+  //   } else {
+  //     adUnitId = Platform.isAndroid
+  //         ? ConstTool.kAndroidReleaseBannerId
+  //         : ConstTool.kiOSReleaseBannerId;
+  //   }
+  //   _anchoredAdaptiveAd = BannerAd(
+  //     adUnitId: adUnitId,
+  //     size: size,
+  //     request: const AdRequest(),
+  //     listener: BannerAdListener(
+  //       onAdLoaded: (Ad ad) {
+  //         if (kDebugMode) {
+  //           print('$ad loaded: ${ad.responseInfo}');
+  //         }
+  //         setState(() {
+  //           // When the ad is loaded, get the ad size and use it to set
+  //           // the height of the ad container.
+  //           _anchoredAdaptiveAd = ad as BannerAd;
+  //           _isLoaded = true;
+  //         });
+  //       },
+  //       onAdFailedToLoad: (Ad ad, LoadAdError error) {
+  //         if (kDebugMode) {
+  //           print('Anchored adaptive banner failedToLoad: $error');
+  //         }
+  //         ad.dispose();
+  //       },
+  //     ),
+  //   );
+  //   return _anchoredAdaptiveAd!.load();
+  // }
 
-  Widget _getAdWidget() {
-    return OrientationBuilder(
-      builder: (context, orientation) {
-        if (_currentOrientation == orientation &&
-            _anchoredAdaptiveAd != null &&
-            _isLoaded) {
-          return Container(
-            color: Colors.green,
-            width: _anchoredAdaptiveAd!.size.width.toDouble(),
-            height: _anchoredAdaptiveAd!.size.height.toDouble(),
-            child: AdWidget(ad: _anchoredAdaptiveAd!),
-          );
-        }
-        // Reload the ad if the orientation changes.
-        if (_currentOrientation != orientation) {
-          _currentOrientation = orientation;
-          _loadAd();
-        }
-        return Container();
-      },
-    );
-  }
+  // Widget _getAdWidget() {
+  //   return OrientationBuilder(
+  //     builder: (context, orientation) {
+  //       if (_currentOrientation == orientation &&
+  //           _anchoredAdaptiveAd != null &&
+  //           _isLoaded) {
+  //         return Container(
+  //           color: Colors.green,
+  //           width: _anchoredAdaptiveAd!.size.width.toDouble(),
+  //           height: _anchoredAdaptiveAd!.size.height.toDouble(),
+  //           child: AdWidget(ad: _anchoredAdaptiveAd!),
+  //         );
+  //       }
+  //       // Reload the ad if the orientation changes.
+  //       if (_currentOrientation != orientation) {
+  //         _currentOrientation = orientation;
+  //         _loadAd();
+  //       }
+  //       return Container();
+  //     },
+  //   );
+  // }
 
   Widget emptyViewWidget() {
     return Center(
@@ -241,7 +241,7 @@ class _FavoritePageState extends State<FavoritePage> {
             appBar: AppBar(
                 title: Text(
               "DC Bus Tracker",
-              style: Theme.of(context).textTheme.headlineSmall,
+              style: Theme.of(context).textTheme.headlineMedium,
             )),
             floatingActionButton: favoriteProvder.busFavorites.isEmpty &&
                     favoriteProvder.railStationFavorites.isEmpty
@@ -249,7 +249,7 @@ class _FavoritePageState extends State<FavoritePage> {
                 : floatingButton(context),
             body: Column(
               children: [
-                _getAdWidget(),
+                // _getAdWidget(),
                 favoriteProvder.busFavorites.isEmpty &&
                         favoriteProvder.railStationFavorites.isEmpty
                     ? Expanded(child: emptyViewWidget())

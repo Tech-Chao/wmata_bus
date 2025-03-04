@@ -161,20 +161,9 @@ class _RailStopPageState extends State<RailStopPage> {
       }
 
       if (autoRefresh && selectedStop != null) {
-        _timer = Timer.periodic(const Duration(seconds: 1), (Timer timer) {
-          if (mounted) {
-            if (remindSeconds.value > 0) {
-              remindSeconds.value -= 1;
-            }
-            if (!isLoading &&
-                selectedStop != null &&
-                remindSeconds.value == 0) {
-              fetchRailPredictions(stop: selectedStop!);
-            }
-          }
-        });
+        _startRefreshTimer();
       }
-    } catch (e) {
+    } finally {
       if (mounted) {
         setState(() {
           stop.isLoading = false;

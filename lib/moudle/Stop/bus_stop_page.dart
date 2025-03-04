@@ -83,7 +83,7 @@ class _BusStopPageState extends State<BusStopPage> {
           tempAutoRefresh == null ? false : bool.parse(tempAutoRefresh);
     });
 
-    if (autoRefresh && selectedStop != null) {
+    if (autoRefresh) {
       _startRefreshTimer();
     }
   }
@@ -92,9 +92,9 @@ class _BusStopPageState extends State<BusStopPage> {
     _timer = Timer.periodic(const Duration(seconds: 1), (Timer timer) {
       if (remindSeconds.value > 0 && selectedStop != null) {
         remindSeconds.value--;
-      }
-      if (mounted && !isLoading && remindSeconds.value == 0) {
-        fetchPredictions();
+        if (mounted && !isLoading && remindSeconds.value == 0) {
+          fetchPredictions();
+        }
       }
     });
   }
@@ -418,18 +418,7 @@ class _BusStopPageState extends State<BusStopPage> {
       _isLoaded = false;
     });
 
-    if (await _shouldShowAd()) {
-      await _initializeAd();
-    }
-  }
-
-  Future<bool> _shouldShowAd() async {
-    final haveFiveStarDate = await StoreManager.get("haveFiveStar");
-    if (haveFiveStarDate == null || haveFiveStarDate == "0") return true;
-
-    final date = DateTime.parse(haveFiveStarDate);
-    final difference = DateTime.now().difference(date);
-    return difference.inDays > 3;
+    await _initializeAd();
   }
 
   Future<void> _initializeAd() async {
