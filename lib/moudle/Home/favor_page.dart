@@ -23,10 +23,6 @@ class FavoritePage extends StatefulWidget {
 class _FavoritePageState extends State<FavoritePage> {
   // IDFA获取授权
   String authStatus = 'Unknown';
-  // 横幅广告
-  // BannerAd? _anchoredAdaptiveAd;
-  // bool _isLoaded = false;
-  // late Orientation _currentOrientation;
   // 开屏广告
   late AppLifecycleReactor _appLifecycleReactor;
 
@@ -63,90 +59,6 @@ class _FavoritePageState extends State<FavoritePage> {
     }
   }
 
-  // // @override
-  // // void didChangeDependencies() {
-  // //   super.didChangeDependencies();
-  // //   _currentOrientation = MediaQuery.of(context).orientation;
-  // //   _loadAd();
-  // // }
-
-  // // Future<void> _loadAd() async {
-  // //   await _anchoredAdaptiveAd?.dispose();
-  // //   setState(() {
-  // //     _anchoredAdaptiveAd = null;
-  // //     _isLoaded = false;
-  // //   });
-
-  //   final AnchoredAdaptiveBannerAdSize? size =
-  //       await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
-  //           MediaQuery.of(context).size.width.truncate());
-
-  //   if (size == null) {
-  //     if (kDebugMode) {
-  //       print('Unable to get height of anchored banner.');
-  //     }
-  //     return;
-  //   }
-  //   String adUnitId;
-  //   if (kDebugMode) {
-  //     adUnitId = Platform.isAndroid
-  //         ? ConstTool.kAndroidDebugBannerId
-  //         : ConstTool.kiOSDebugBannerId;
-  //   } else {
-  //     adUnitId = Platform.isAndroid
-  //         ? ConstTool.kAndroidReleaseBannerId
-  //         : ConstTool.kiOSReleaseBannerId;
-  //   }
-  //   _anchoredAdaptiveAd = BannerAd(
-  //     adUnitId: adUnitId,
-  //     size: size,
-  //     request: const AdRequest(),
-  //     listener: BannerAdListener(
-  //       onAdLoaded: (Ad ad) {
-  //         if (kDebugMode) {
-  //           print('$ad loaded: ${ad.responseInfo}');
-  //         }
-  //         setState(() {
-  //           // When the ad is loaded, get the ad size and use it to set
-  //           // the height of the ad container.
-  //           _anchoredAdaptiveAd = ad as BannerAd;
-  //           _isLoaded = true;
-  //         });
-  //       },
-  //       onAdFailedToLoad: (Ad ad, LoadAdError error) {
-  //         if (kDebugMode) {
-  //           print('Anchored adaptive banner failedToLoad: $error');
-  //         }
-  //         ad.dispose();
-  //       },
-  //     ),
-  //   );
-  //   return _anchoredAdaptiveAd!.load();
-  // }
-
-  // Widget _getAdWidget() {
-  //   return OrientationBuilder(
-  //     builder: (context, orientation) {
-  //       if (_currentOrientation == orientation &&
-  //           _anchoredAdaptiveAd != null &&
-  //           _isLoaded) {
-  //         return Container(
-  //           color: Colors.green,
-  //           width: _anchoredAdaptiveAd!.size.width.toDouble(),
-  //           height: _anchoredAdaptiveAd!.size.height.toDouble(),
-  //           child: AdWidget(ad: _anchoredAdaptiveAd!),
-  //         );
-  //       }
-  //       // Reload the ad if the orientation changes.
-  //       if (_currentOrientation != orientation) {
-  //         _currentOrientation = orientation;
-  //         _loadAd();
-  //       }
-  //       return Container();
-  //     },
-  //   );
-  // }
-
   Widget emptyViewWidget() {
     return Center(
       child: Column(
@@ -163,7 +75,10 @@ class _FavoritePageState extends State<FavoritePage> {
                 widget.onMyTap(1);
               },
               child: Text("Add Stop",
-                  style: Theme.of(context).textTheme.headlineSmall))
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(color: Colors.white)))
         ],
       ),
     );
@@ -173,9 +88,48 @@ class _FavoritePageState extends State<FavoritePage> {
     return ListView.builder(
       itemCount: favorites.length,
       itemBuilder: (BuildContext context, int index) {
-        return GestureDetector(
+        return Dismissible(
+          key: Key(favorites[index].hashCode.toString()),
+          direction: DismissDirection.endToStart,
+          background: Container(
+            color: Colors.red,
+            alignment: Alignment.centerRight,
+            padding: const EdgeInsets.only(right: 16),
+            child: const Icon(Icons.delete, color: Colors.white),
+          ),
+          confirmDismiss: (direction) async {
+            return await showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text('Confirm Delete',
+                      style: Theme.of(context).textTheme.titleLarge),
+                  content: Text('Are you sure you want to delete this favorite?',
+                      style: Theme.of(context).textTheme.titleMedium),
+                  actions: <Widget>[
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(false),
+                      child: const Text('Cancel'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(true),
+                      child: const Text('Delete'),
+                    ),
+                  ],
+                );
+              },
+            );
+          },
+          onDismissed: (direction) {
+            final provider = context.read<FavoriteProvder>();
+            if (favorites[index] is BusStop) {
+              provider.removeBusFavorite(favorites[index]);
+            } else {
+              provider.removeRailStationFavorite(favorites[index]); 
+            }
+          },
+          child: GestureDetector(
             onTap: () {
-              // 跳转详情页 child: RouteCell(route: null),
               if (favorites[index] is BusStop) {
                 BusStop stop = favorites[index];
                 Navigator.of(context)
@@ -196,9 +150,43 @@ class _FavoritePageState extends State<FavoritePage> {
                 }));
               }
             },
+            onLongPress: () async {
+              bool? confirm = await showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('Confirm Delete',
+                        style: Theme.of(context).textTheme.titleLarge),
+                    content: Text('Are you sure you want to delete this favorite?',
+                        style: Theme.of(context).textTheme.titleMedium),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(false),
+                        child: const Text('Cancel'),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(true),
+                        child: const Text('Delete'),
+                      ),
+                    ],
+                  );
+                },
+              );
+
+              if (confirm == true) {
+                final provider = context.read<FavoriteProvder>();
+                if (favorites[index] is BusStop) {
+                  provider.removeBusFavorite(favorites[index]);
+                } else {
+                  provider.removeRailStationFavorite(favorites[index]);
+                }
+              }
+            },
             child: favorites[index] is BusStop
                 ? BusFavorCell(stop: favorites[index])
-                : RailFavorCell(stop: favorites[index]));
+                : RailFavorCell(stop: favorites[index])
+          ),
+        );
       },
     );
   }
@@ -216,7 +204,7 @@ class _FavoritePageState extends State<FavoritePage> {
             appBar: AppBar(
                 title: Text(
               "DC Bus Tracker",
-              style: Theme.of(context).textTheme.headlineMedium,
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white),
             )),
             floatingActionButton: favoriteProvder.busFavorites.isEmpty &&
                     favoriteProvder.railStationFavorites.isEmpty
@@ -278,7 +266,7 @@ class _FavoritePageState extends State<FavoritePage> {
                 );
               });
         },
-        tooltip: '清除數據',
+        tooltip: 'Delete all favorites',
         child: const Icon(Icons.delete_forever_sharp));
   }
 }

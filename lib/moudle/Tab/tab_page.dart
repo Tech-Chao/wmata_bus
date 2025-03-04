@@ -144,7 +144,7 @@ class _MyTabPageState extends State<MyTabPage> {
       ),
       body: Stack(children: [
         Padding(
-          padding: const EdgeInsets.only(bottom: 70),
+          padding: const EdgeInsets.only(bottom: 60),
           child: IndexedStack(index: currentIndex, children: pages),
         ),
         _anchoredAdaptiveAd != null && _isLoaded

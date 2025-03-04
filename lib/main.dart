@@ -24,7 +24,6 @@ void main() async {
   }
   // 异步加载本地公交数据JSON
   List<BusRoute>? routes = await loadRouteData();
-
   List<RailRoute>? railRoutes = await loadRailRoutesData();
 
   List<BusStop> favoriteStops = await FavoriteStorer.getFavoriteBusStops();
@@ -44,29 +43,29 @@ void main() async {
   ], child: const MyApp()));
 }
 
-const defaultTextThemeData = TextTheme(
-  headlineLarge: TextStyle(
-      fontSize: 22.0, fontWeight: FontWeight.bold, color: Colors.white),
-  headlineMedium: TextStyle(
-      fontSize: 19.0, fontWeight: FontWeight.bold, color: Colors.white),
-  headlineSmall: TextStyle(
-      fontSize: 16.0, fontWeight: FontWeight.bold, color: Colors.white),
-  titleLarge: TextStyle(fontSize: 20.0),
-  titleMedium: TextStyle(fontSize: 18.0, color: Color(0xff333333)),
-  titleSmall: TextStyle(fontSize: 14.0, color: Color(0xff333333)),
-);
+// const defaultTextThemeData = TextTheme(
+//   headlineLarge: TextStyle(
+//       fontSize: 22.0, fontWeight: FontWeight.bold, color: Colors.white),
+//   headlineMedium: TextStyle(
+//       fontSize: 19.0, fontWeight: FontWeight.bold, color: Colors.white),
+//   headlineSmall: TextStyle(
+//       fontSize: 16.0, fontWeight: FontWeight.bold, color: Colors.white),
+//   titleLarge: TextStyle(fontSize: 20.0),
+//   titleMedium: TextStyle(fontSize: 18.0, color: Color(0xff333333)),
+//   titleSmall: TextStyle(fontSize: 14.0, color: Color(0xff333333)),
+// );
 
-const olderTextThemeData = TextTheme(
-  headlineLarge: TextStyle(
-      fontSize: 32.0, fontWeight: FontWeight.bold, color: Colors.white),
-  headlineMedium: TextStyle(
-      fontSize: 28.0, fontWeight: FontWeight.bold, color: Colors.white),
-  headlineSmall: TextStyle(
-      fontSize: 24.0, fontWeight: FontWeight.bold, color: Colors.white),
-  titleLarge: TextStyle(fontSize: 30.0),
-  titleMedium: TextStyle(fontSize: 26.0, color: Color(0xff333333)),
-  titleSmall: TextStyle(fontSize: 20.0, color: Color(0xff333333)),
-);
+// const olderTextThemeData = TextTheme(
+//   headlineLarge: TextStyle(
+//       fontSize: 32.0, fontWeight: FontWeight.bold, color: Colors.white),
+//   headlineMedium: TextStyle(
+//       fontSize: 28.0, fontWeight: FontWeight.bold, color: Colors.white),
+//   headlineSmall: TextStyle(
+//       fontSize: 24.0, fontWeight: FontWeight.bold, color: Colors.white),
+//   titleLarge: TextStyle(fontSize: 30.0),
+//   titleMedium: TextStyle(fontSize: 26.0, color: Color(0xff333333)),
+//   titleSmall: TextStyle(fontSize: 20.0, color: Color(0xff333333)),
+// );
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -95,7 +94,7 @@ class MyApp extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
                     backgroundColor: const Color(0xff008457))),
-            textTheme: defaultTextThemeData,
+            // textTheme: defaultTextThemeData,
             floatingActionButtonTheme: const FloatingActionButtonThemeData(
                 foregroundColor: Colors.white,
                 backgroundColor: Color(0xff008457))),
@@ -126,7 +125,7 @@ class MyApp extends StatelessWidget {
 Future<List<BusRoute>?> loadRouteData() async {
   try {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? prefsData = prefs.getString(ConstTool.kAllRouteskey);
+    String? prefsData = prefs.getString(ConstTool.kAllBusRouteskey);
     if (prefsData != null) {
       List<Map<String, dynamic>> jsonMaps =
           json.decode(prefsData).cast<Map<String, dynamic>>() ?? [];

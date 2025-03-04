@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:wmata_bus/Model/bus_route.dart';
+import 'package:wmata_bus/Model/rail_route.dart';
 import 'package:wmata_bus/Providers/route_provider.dart';
 import 'package:wmata_bus/Utils/const_tool.dart';
 import 'package:wmata_bus/Utils/store_manager.dart';
@@ -83,10 +84,15 @@ class _MinePageViewState extends State<MinePageView> {
       if (temp != null && temp.isNotEmpty) {
         await _updateRouteData(context, temp);
       }
+
+      final tempRail = await APIService.getRailRoutes();
+      if (tempRail != null && tempRail.isNotEmpty) {
+        await _updateRailData(context, tempRail);
+      }
     } finally {
       setState(() => loading = false);
     }
-  }
+  } 
 
   Future<void> _updateRouteData(
       BuildContext context, List<BusRoute> routes) async {
@@ -94,12 +100,17 @@ class _MinePageViewState extends State<MinePageView> {
 
     final prefs = await SharedPreferences.getInstance();
     final newRoutes = json.encode(routes);
-    await prefs.setString(ConstTool.kAllRouteskey, newRoutes);
+    await prefs.setString(ConstTool.kAllBusRouteskey, newRoutes);
 
     final currentTime = DateTime.now().toIso8601String();
     await prefs.setString('last_update_time', currentTime);
 
     setState(() => lastUpdateTime = currentTime);
+  }
+
+  Future<void> _updateRailData(
+      BuildContext context, List<RailRoute> routes) async {
+      Provider.of<AppRouteProvider>(context, listen: false).setRailRoutes(routes);
   }
 
   Widget _buildSettingsSection() {
@@ -174,7 +185,7 @@ class _MinePageViewState extends State<MinePageView> {
         elevation: 0,
         centerTitle: true,
         title:
-            Text('Setting', style: Theme.of(context).textTheme.headlineMedium),
+            Text('Setting', style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white)),
       ),
       body: ListView(
         children: [

@@ -16,7 +16,7 @@ import 'package:wmata_bus/Utils/const_tool.dart';
 import 'package:wmata_bus/Utils/store_manager.dart';
 import 'package:provider/provider.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-import 'package:wmata_bus/moudle/Services/api_services_new.dart';
+import 'package:wmata_bus/moudle/Services/api_services.dart';
 import 'package:wmata_bus/moudle/Stop/View/rail_stop_cell.dart';
 import 'package:wmata_bus/moudle/Stop/incident_page.dart';
 
@@ -251,8 +251,8 @@ class _RailStopPageState extends State<RailStopPage> {
   PreferredSizeWidget _buildAppBar(BuildContext context) {
     return AppBar(
         title: Text(widget.route.displayName ?? "",
-            style: Theme.of(context).textTheme.headlineMedium));
-  }
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.white)));
+  } 
 
   Widget _buildBody(BuildContext context, List<RailStation> favoriteStations) {
     if (isLoading) {

@@ -67,6 +67,10 @@ class _IncidentPageState extends State<IncidentPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Incidents'),
+        leading: IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         centerTitle: true,
       ),
       backgroundColor: Theme.of(context).colorScheme.surface,

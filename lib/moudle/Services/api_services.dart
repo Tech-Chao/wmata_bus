@@ -5,6 +5,7 @@ import 'package:wmata_bus/Model/bus_incident.dart';
 import 'package:wmata_bus/Model/bus_prediction.dart';
 import 'package:wmata_bus/Model/bus_route_detail.dart';
 import 'package:wmata_bus/Model/bus_route.dart';
+import 'package:wmata_bus/Model/rail_route.dart';
 import 'package:wmata_bus/Model/rail_station.dart';
 import 'package:wmata_bus/Model/rail_predictino.dart';
 
@@ -40,11 +41,11 @@ class APIService {
     }
   }
 
-  // http://api.wmata.com/Rail.svc/json/jStations
-  static Future<List<RailStation>?> getRailStation() async {
+  // http://api.wmata.com/Rail.svc/json/jLines  
+  static Future<List<RailRoute>?> getRailRoutes() async {
     try {
       var httpClient = HttpClient();
-      var uri = Uri.parse('http://api.wmata.com/Rail.svc/json/jStations');
+      var uri = Uri.parse('http://api.wmata.com/Rail.svc/json/jLines');
       var request = await httpClient.getUrl(uri);
       request.headers.add(apiKey, key);
       var response = await request.close();
@@ -53,9 +54,9 @@ class APIService {
         var responseBody = await utf8.decodeStream(response);
         Map<String, dynamic> data = json.decode(responseBody);
         List<Map<String, dynamic>> stationMaps =
-            (data["Stations"] as List<dynamic>).cast<Map<String, dynamic>>();
-        List<RailStation> stations =
-            stationMaps.map((e) => RailStation.fromJson(e)).toList();
+            (data["Lines"] as List<dynamic>).cast<Map<String, dynamic>>();
+        List<RailRoute> stations =
+            stationMaps.map((e) => RailRoute.fromJson(e)).toList();
         return stations;
       } else {
         debugPrint('HTTP request failed with status ${response.statusCode}');

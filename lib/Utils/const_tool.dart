@@ -22,6 +22,6 @@ class ConstTool {
   static String kiOSReleaseOpenAdId = "ca-app-pub-2502829248373257/2699948785";
 
   // 常来那个名称
-  static String kAllRouteskey = "kAllRouteskey";
   static String kAllRailRouteskey = "kAllRailRouteskey";
+  static String kAllBusRouteskey = "kAllBusRouteskey";
 }

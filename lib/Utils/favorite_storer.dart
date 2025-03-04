@@ -3,13 +3,13 @@ import 'package:wmata_bus/Model/bus_stop.dart';
 import 'package:wmata_bus/Model/rail_station.dart';
 import 'package:wmata_bus/Utils/store_manager.dart';
 
-const kFavoriteRoutes = "kFavoriteRoutes";
+const kFavoriteBusStops = "kFavoriteBusStops";
 const kFavoriteRailStations = "kFavoriteRailStations";
 
-class FavoriteStorer {      
+class FavoriteStorer {
   /// 收藏站点
   static Future<List<BusStop>> getFavoriteBusStops() async {
-    String? jsonString = await StoreManager.get(kFavoriteRoutes);
+    String? jsonString = await StoreManager.get(kFavoriteBusStops);
     if (jsonString == null) {
       return <BusStop>[];
     }
@@ -39,7 +39,7 @@ class FavoriteStorer {
     }
     favorStops.insert(0, addStop);
     String jsonString = json.encode(favorStops);
-    StoreManager.save(kFavoriteRoutes, jsonString);
+    StoreManager.save(kFavoriteBusStops, jsonString);
     return favorStops;
   }
 
@@ -65,7 +65,7 @@ class FavoriteStorer {
       }
     }
     String jsonString = json.encode(favorStops);
-    StoreManager.save(kFavoriteRoutes, jsonString);
+    StoreManager.save(kFavoriteBusStops, jsonString);
     return favorStops;
   }
 
@@ -85,7 +85,7 @@ class FavoriteStorer {
   }
 
   static Future<void> clear() async {
-    StoreManager.remove(kFavoriteRoutes);
+    StoreManager.remove(kFavoriteBusStops);
     StoreManager.remove(kFavoriteRailStations);
   }
 }
