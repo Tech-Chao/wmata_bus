@@ -1,4 +1,4 @@
-import 'package:wmata_bus/Model/bus_route_new.dart';
+import 'package:wmata_bus/Model/bus_route.dart';
 import 'package:wmata_bus/Providers/route_provider.dart';
 import 'package:wmata_bus/moudle/Route/View/bus_route_cell.dart';
 import 'package:wmata_bus/moudle/Stop/bus_stop_page.dart';
@@ -14,13 +14,13 @@ class BusRouteList extends StatefulWidget {
 }
 
 class _BusRouteListState extends State<BusRouteList> {
-  List<BusRouteNew> filterRoutes = [];
+  List<BusRoute> filterRoutes = [];
 
   @override
   Widget build(BuildContext context) {
     return Consumer<AppRouteProvider>(
       builder: (context, appRouteProvider, child) {
-        List<BusRouteNew>? routes = appRouteProvider.busRoutes;
+        List<BusRoute>? routes = appRouteProvider.busRoutes;
         filterRoutes = routes!
             .where((e) =>
                 e.routeID
@@ -36,7 +36,7 @@ class _BusRouteListState extends State<BusRouteList> {
             : ListView.builder(
                 itemCount: filterRoutes.length,
                 itemBuilder: (BuildContext context, int index) {
-                  BusRouteNew route = filterRoutes[index];
+                  BusRoute route = filterRoutes[index];
                   return GestureDetector(
                       onTap: () {
                         // 跳转详情页

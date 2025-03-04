@@ -8,20 +8,20 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wmata_bus/Model/bus_incident.dart';
-import 'package:wmata_bus/Model/bus_route_new.dart';
+import 'package:wmata_bus/Model/bus_route.dart';
 import 'package:wmata_bus/Providers/favorite_provider.dart';
 import 'package:wmata_bus/Utils/const_tool.dart';
 import 'package:wmata_bus/Utils/store_manager.dart';
 import 'package:provider/provider.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-import 'package:wmata_bus/moudle/Services/api_services_new.dart';
+import 'package:wmata_bus/moudle/Services/api_services.dart';
 import 'package:wmata_bus/moudle/Stop/View/bus_stop_cell.dart';
-import 'package:wmata_bus/Model/bus_route_detail_new.dart';
+import 'package:wmata_bus/Model/bus_route_detail.dart';
 import 'package:wmata_bus/Model/bus_stop.dart';
 import 'package:wmata_bus/moudle/Stop/incident_page.dart';
 
 class BusStopPage extends StatefulWidget {
-  final BusRouteNew? route;
+  final BusRoute? route;
   final BusStop? stop;
 
   const BusStopPage({super.key, required this.route, this.stop});
@@ -33,7 +33,7 @@ class BusStopPage extends StatefulWidget {
 class _BusStopPageState extends State<BusStopPage> {
   // State variables
   bool isLoading = false;
-  BusRouteDetailNew? routeDetail;
+  BusRouteDetail? routeDetail;
   String? direction2;
   BusStop? selectedStop;
   Timer? _timer;
@@ -150,7 +150,7 @@ class _BusStopPageState extends State<BusStopPage> {
     }
   }
 
-  void _updateRouteStops(BusRouteDetailNew res) {
+  void _updateRouteStops(BusRouteDetail res) {
     res.direction0?.stops?.forEach((e) => e.route = widget.route);
     res.direction1?.stops?.forEach((e) => e.route = widget.route);
     direction2 = res.direction0?.directionText;
@@ -159,7 +159,7 @@ class _BusStopPageState extends State<BusStopPage> {
     }
   }
 
-  void _handleInitialStop(BusRouteDetailNew res) {
+  void _handleInitialStop(BusRouteDetail res) {
     if (widget.stop == null) return;
 
     setState(() {

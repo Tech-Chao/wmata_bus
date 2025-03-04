@@ -1,5 +1,5 @@
-import 'package:wmata_bus/Model/bus_prediction_new.dart';
-import 'package:wmata_bus/Model/bus_route_new.dart';
+import 'package:wmata_bus/Model/bus_prediction.dart';
+import 'package:wmata_bus/Model/bus_route.dart';
 
 class BusStop {
   double? lat;
@@ -10,12 +10,12 @@ class BusStop {
 
   // 自己增加
   String? direction;
-  BusRouteNew? route;
+  BusRoute? route;
 
   // 不保存
   bool isLoading = false;
   bool isSelected = false;
-  List<BusPredictionNew>? predictions;
+  List<BusPrediction>? predictions;
 
   BusStop({this.lat, this.lon, this.name, this.routes, this.stopID});
 
@@ -29,7 +29,7 @@ class BusStop {
     //自己增加
     direction = json['direction'];
     if (json['route'] != null) {
-      route = BusRouteNew.fromJson(json['route']);
+      route = BusRoute.fromJson(json['route']);
     }
   }
 

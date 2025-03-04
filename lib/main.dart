@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:wmata_bus/Model/bus_route_new.dart';
+import 'package:wmata_bus/Model/bus_route.dart';
 import 'package:wmata_bus/Model/bus_stop.dart';
 import 'package:wmata_bus/Model/rail_route.dart';
 import 'package:wmata_bus/Model/rail_station.dart';
@@ -23,7 +23,7 @@ void main() async {
     debugPrint('AdMob initialization error: $e');
   }
   // 异步加载本地公交数据JSON
-  List<BusRouteNew>? routes = await loadRouteData();
+  List<BusRoute>? routes = await loadRouteData();
 
   List<RailRoute>? railRoutes = await loadRailRoutesData();
 
@@ -123,23 +123,23 @@ class MyApp extends StatelessWidget {
 }
 
 // 读取本地数据
-Future<List<BusRouteNew>?> loadRouteData() async {
+Future<List<BusRoute>?> loadRouteData() async {
   try {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? prefsData = prefs.getString(ConstTool.kAllRouteskey);
     if (prefsData != null) {
       List<Map<String, dynamic>> jsonMaps =
           json.decode(prefsData).cast<Map<String, dynamic>>() ?? [];
-      List<BusRouteNew>? routes =
-          jsonMaps.map((e) => BusRouteNew.fromJson(e)).toList();
+      List<BusRoute>? routes =
+          jsonMaps.map((e) => BusRoute.fromJson(e)).toList();
       return routes;
     }
 
     // 如果不存在则从 assets 中加载
     String jsonString = await rootBundle.loadString('assets/bus_routes.json');
     List<dynamic> routeMaps = json.decode(jsonString);
-    List<BusRouteNew>? routes =
-        routeMaps.map((dynamic e) => BusRouteNew.fromJson(e)).toList();
+    List<BusRoute>? routes =
+        routeMaps.map((dynamic e) => BusRoute.fromJson(e)).toList();
     return routes;
   } catch (error) {
     debugPrint('Error loading local JSON: $error');

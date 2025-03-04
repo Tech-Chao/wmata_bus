@@ -1,10 +1,10 @@
 import 'dart:convert';
 
-import 'package:wmata_bus/Model/bus_route_new.dart';
+import 'package:wmata_bus/Model/bus_route.dart';
 import 'package:wmata_bus/Providers/route_provider.dart';
 import 'package:wmata_bus/Utils/const_tool.dart';
 import 'package:wmata_bus/Utils/store_manager.dart';
-import 'package:wmata_bus/moudle/Services/api_services_new.dart';
+import 'package:wmata_bus/moudle/Services/api_services.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -89,7 +89,7 @@ class _MinePageViewState extends State<MinePageView> {
   }
 
   Future<void> _updateRouteData(
-      BuildContext context, List<BusRouteNew> routes) async {
+      BuildContext context, List<BusRoute> routes) async {
     Provider.of<AppRouteProvider>(context, listen: false).setBusRoutes(routes);
 
     final prefs = await SharedPreferences.getInstance();

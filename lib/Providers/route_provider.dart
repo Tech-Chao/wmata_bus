@@ -1,15 +1,15 @@
-import 'package:wmata_bus/Model/bus_route_new.dart';
+import 'package:wmata_bus/Model/bus_route.dart';
 import 'package:flutter/material.dart';
 import 'package:wmata_bus/Model/rail_route.dart';
 
 class AppRouteProvider extends ChangeNotifier {
-  List<BusRouteNew>? _busRoutes;
-  List<BusRouteNew>? get busRoutes => _busRoutes;
+  List<BusRoute>? _busRoutes;
+  List<BusRoute>? get busRoutes => _busRoutes;
 
   List<RailRoute>? _railRoutes;
   List<RailRoute>? get railRoutes => _railRoutes;
 
-  void setBusRoutes(List<BusRouteNew>? data) {
+  void setBusRoutes(List<BusRoute>? data) {
     _busRoutes = data
         ?.where((e) =>
             e.routeID != null &&

@@ -1,90 +1,103 @@
 import 'package:wmata_bus/Model/bus_stop.dart';
 
 class BusRouteDetail {
-  String? routeId;
-  String? agencyId;
-  String? routeShortName;
-  String? routeLongName;
-  String? routeDesc;
-  String? routeType;
-  String? routeUrl;
-  String? routeColor;
-  String? routeTextColor;
-  List<Direction>? directions;
+  Direction? direction0;
+  Direction? direction1;
+  String? name;
+  String? routeID;
 
-  BusRouteDetail(
-      {this.routeId,
-      this.agencyId,
-      this.routeShortName,
-      this.routeLongName,
-      this.routeDesc,
-      this.routeType,
-      this.routeUrl,
-      this.routeColor,
-      this.routeTextColor,
-      this.directions});
+  BusRouteDetail({this.direction0, this.direction1, this.name, this.routeID});
 
   BusRouteDetail.fromJson(Map<String, dynamic> json) {
-    routeId = json['route_id'];
-    agencyId = json['agency_id'];
-    routeShortName = json['route_short_name'];
-    routeLongName = json['route_long_name'];
-    routeDesc = json['route_desc'];
-    routeType = json['route_type'];
-    routeUrl = json['route_url'];
-    routeColor = json['route_color'];
-    routeTextColor = json['route_text_color'];
-    if (json['directions'] != null) {
-      directions = <Direction>[];
-      json['directions'].forEach((v) {
-        directions!.add(Direction.fromJson(v));
-      });
-    }
+    direction0 = json['Direction0'] != null
+        ? Direction.fromJson(json['Direction0'])
+        : null;
+    direction1 = json['Direction1'] != null
+        ? Direction.fromJson(json['Direction1'])
+        : null;
+    name = json['Name'];
+    routeID = json['RouteID'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['route_id'] = routeId;
-    data['agency_id'] = agencyId;
-    data['route_short_name'] = routeShortName;
-    data['route_long_name'] = routeLongName;
-    data['route_desc'] = routeDesc;
-    data['route_type'] = routeType;
-    data['route_url'] = routeUrl;
-    data['route_color'] = routeColor;
-    data['route_text_color'] = routeTextColor;
-    if (directions != null) {
-      data['directions'] = directions!.map((v) => v.toJson()).toList();
+    if (direction0 != null) {
+      data['Direction'] = direction0!.toJson();
     }
+    if (direction1 != null) {
+      data['Direction1'] = direction1!.toJson();
+    }
+    data['Name'] = name;
+    data['RouteID'] = routeID;
     return data;
   }
 }
 
 class Direction {
-  String? directionId;
-  String? tripHeadsign;
+  String? directionNum;
+  String? directionText;
+  List<Shape>? shape;
   List<BusStop>? stops;
+  String? tripHeadsign;
 
-  Direction({this.directionId, this.tripHeadsign, this.stops});
+  Direction(
+      {this.directionNum,
+      this.directionText,
+      this.shape,
+      this.stops,
+      this.tripHeadsign});
 
   Direction.fromJson(Map<String, dynamic> json) {
-    directionId = json['direction_id'];
-    tripHeadsign = json['trip_headsign'];
-    if (json['stops'] != null) {
+    directionNum = json['DirectionNum'];
+    directionText = json['DirectionText'];
+    if (json['Shape'] != null) {
+      shape = <Shape>[];
+      json['Shape'].forEach((v) {
+        shape!.add(Shape.fromJson(v));
+      });
+    }
+    if (json['Stops'] != null) {
       stops = <BusStop>[];
-      json['stops'].forEach((v) {
+      json['Stops'].forEach((v) {
         stops!.add(BusStop.fromJson(v));
       });
     }
+    tripHeadsign = json['TripHeadsign'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['direction_id'] = directionId;
-    data['trip_headsign'] = tripHeadsign;
-    if (stops != null) {
-      data['stops'] = stops!.map((v) => v.toJson()).toList();
+    data['DirectionNum'] = directionNum;
+    data['DirectionText'] = directionText;
+    if (shape != null) {
+      data['Shape'] = shape!.map((v) => v.toJson()).toList();
     }
+    if (stops != null) {
+      data['Stops'] = stops!.map((v) => v.toJson()).toList();
+    }
+    data['TripHeadsign'] = tripHeadsign;
+    return data;
+  }
+}
+
+class Shape {
+  double? lat;
+  double? lon;
+  int? seqNum;
+
+  Shape({this.lat, this.lon, this.seqNum});
+
+  Shape.fromJson(Map<String, dynamic> json) {
+    lat = json['Lat'];
+    lon = json['Lon'];
+    seqNum = json['SeqNum'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['Lat'] = lat;
+    data['Lon'] = lon;
+    data['SeqNum'] = seqNum;
     return data;
   }
 }
