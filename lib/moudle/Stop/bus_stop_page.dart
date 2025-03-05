@@ -52,7 +52,6 @@ class _BusStopPageState extends State<BusStopPage> {
   BannerAd? _anchoredAdaptiveAd;
   bool _isLoaded = false;
 
-
   @override
   void initState() {
     super.initState();
@@ -187,10 +186,17 @@ class _BusStopPageState extends State<BusStopPage> {
     try {
       final predictions =
           await APIService.getBusPredictions(stpid: selectedStop!.stopID!);
+
+      final directionModel =
+          direction2 == routeDetail?.direction0?.directionText
+              ? routeDetail?.direction0
+              : routeDetail?.direction1;
+
       final filteredPredictions = predictions
-          ?.where((element) => element.routeID == widget.route?.routeID)
-          .toList()
-        ?..sort((p1, p2) => p1.minutes!.compareTo(p2.minutes!));
+          ?.where((element) =>
+              element.routeID == widget.route?.routeID &&
+              element.directionNum == directionModel?.directionNum)
+          .toList();
 
       if (mounted) {
         setState(() {
