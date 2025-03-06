@@ -46,7 +46,7 @@ class _FavoritePageState extends State<FavoritePage> {
     // If the system can show an authorization request dialog
     if (status == TrackingStatus.notDetermined) {
       // Wait for dialog popping animation
-      await Future.delayed(const Duration(milliseconds: 200));
+      await Future.delayed(const Duration(milliseconds: 1000));
       // Request system's tracking authorization dialog
       final TrackingStatus status =
           await AppTrackingTransparency.requestTrackingAuthorization();
